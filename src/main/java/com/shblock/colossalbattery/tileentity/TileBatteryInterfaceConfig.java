@@ -1,4 +1,4 @@
 package com.shblock.colossalbattery.tileentity;
 
-public class TileInterfaceConfig {
+public class TileBatteryInterfaceConfig {
 }

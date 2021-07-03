@@ -1,4 +1,4 @@
 package com.shblock.colossalbattery.tileentity;
 
-public class TileColossalBatteryConfig {
+public class TileBatteryCoreConfig {
 }

@@ -10,43 +10,55 @@ import java.util.function.Predicate;
 
 public class MultiBlockHelper {
     /**
-     * Find valid core blocks that's connected with the starting pos with valid connect blocks or another valid core block.
+     * Find valid target blocks that's connected with the starting pos with valid connect blocks or another valid target block.
      * @param world World in.
      * @param pos Starting pos.
      * @param validator_connect The block validator for connect blocks.
-     * @param validator_core The block validator for core blocks.
+     * @param validator The block validator for target blocks.
      * @param set Scanned blocks (for recursion).
-     * @param core_set Found core blocks (for recursion and result).
+     * @param founded_set Founded blocks (for recursion and result).
      * @return The current founded core blocks.
      */
-    private static HashSet<BlockPos> findCore(World world, BlockPos pos, Predicate<Block> validator_connect, Predicate<Block> validator_core, HashSet<BlockPos> set, HashSet<BlockPos> core_set) {
+    private static HashSet<BlockPos> findConnectedBlocks(World world, BlockPos pos, Predicate<Block> validator_connect, Predicate<Block> validator, HashSet<BlockPos> set, HashSet<BlockPos> founded_set) {
         Block block = world.getBlockState(pos).getBlock();
-        if (validator_core.test(block)) {
-            core_set.add(pos);
+        if (validator.test(block)) {
+            founded_set.add(pos);
         }
         if (validator_connect.test(block)) {
             set.add(pos);
             for (Direction direction : Direction.values()) {
                 BlockPos offset_pos = pos.offset(direction);
                 if (!set.contains(offset_pos)) {
-                    findCore(world, offset_pos, validator_connect, validator_core, set, core_set);
+                    findConnectedBlocks(world, offset_pos, validator_connect, validator, set, founded_set);
                 }
             }
         }
-        return core_set;
+        return founded_set;
     }
 
     /**
-     * For calling the upwards function easily (if no is found or multiple is found, will return null).
+     * Find a single block in the structure (if no is found or multiple is found, will return null).
      * @param world World in.
      * @param pos Starting pos.
      * @param validator_connect The block validator for connect blocks.
-     * @param validator_core The block validator for core blocks.
+     * @param validator The target block validator.
      * @return The founded core block (if no is found or multiple is found, will return null).
      */
-    public static BlockPos findCore(World world, BlockPos pos, Predicate<Block> validator_connect, Predicate<Block> validator_core) {
-        HashSet<BlockPos> core_set = findCore(world, pos, validator_connect, validator_core, new HashSet<>(), new HashSet<>());
+    public static BlockPos findBlockSingle(World world, BlockPos pos, Predicate<Block> validator_connect, Predicate<Block> validator) {
+        HashSet<BlockPos> core_set = findConnectedBlocks(world, pos, validator_connect, validator, new HashSet<>(), new HashSet<>());
         return core_set.size() != 1 ? null : core_set.iterator().next();
+    }
+
+    /**
+     * Find all target blocks in the structure.
+     * @param world World in.
+     * @param pos Starting pos.
+     * @param validator_connect The block validator for connect blocks.
+     * @param validator The target block validator.
+     * @return The founded blocks.
+     */
+    public static HashSet<BlockPos> findBlockMultiple(World world, BlockPos pos, Predicate<Block> validator_connect, Predicate<Block> validator) {
+        return findConnectedBlocks(world, pos, validator_connect, validator, new HashSet<>(), new HashSet<>());
     }
 
     /**
@@ -143,7 +155,7 @@ public class MultiBlockHelper {
      * @param validator_inner The block validator for core block.
      * @return The CubeStructure object, or null if didn't found any structure.
      */
-    public static CubeStructure validateBoxWithCore(World world, BlockPos pos, Predicate<Block> validator_outline, Predicate<Block> validator_inner) {
+    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_outline, Predicate<Block> validator_inner) {
         HashSet<BlockPos> full_set = scanConnectedBlocks(world, pos, validator_outline.or(validator_inner));
         BlockPos min_pos = findMinCorner(full_set);
         BlockPos max_pos = findMaxCorner(full_set);
