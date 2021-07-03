@@ -1,0 +1,33 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+license="MIT"
+issueTrackerURL="https://github.com/shBLOCK/ColossalBattery/issues"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/colossal_battery"
+logoFile="icon.png"
+authors="shBLOCK"
+
+[[mods]]
+modId="colossal_battery"
+version="${file.jarVersion}"
+displayName="ColossalBattery"
+description='''
+.
+'''
+[[dependencies.colossal_battery]]
+    modId="forge"
+    mandatory=true
+    versionRange="[34,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.colossal_battery]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16,1.17)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.colossal_battery]]
+    modId="cyclopscore"
+    mandatory=true
+    versionRange="[1.11.1,)"
+    ordering="NONE"
+    side="BOTH"
