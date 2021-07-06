@@ -149,12 +149,12 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-//    compile("org.cyclops.integratedterminals:IntegratedTerminals:${mc_version}-${integratedterminals_version}:deobf") {
-////        transitive = false
-//    }
-//    compile("org.cyclops.integratedtunnels:IntegratedTunnels:${mc_version}-${integratedtunnels_version}:deobf") {
+    compile("org.cyclops.integratedterminals:IntegratedTerminals:${mc_version}-${integratedterminals_version}:deobf") {
 //        transitive = false
-//    }
+    }
+    compile("org.cyclops.integratedtunnels:IntegratedTunnels:${mc_version}-${integratedtunnels_version}:deobf") {
+        transitive = false
+    }
     compile("org.cyclops.colossalchests:ColossalChests:1.16.5-1.7.13-8:deobf") {
 //        transitive = false
     }

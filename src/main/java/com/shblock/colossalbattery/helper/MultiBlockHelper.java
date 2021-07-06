@@ -1,5 +1,7 @@
 package com.shblock.colossalbattery.helper;
 
+import com.shblock.colossalbattery.material.BatteryMaterial;
+import com.shblock.colossalbattery.material.BatteryMaterials;
 import net.minecraft.block.Block;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +31,7 @@ public class MultiBlockHelper {
             for (Direction direction : Direction.values()) {
                 BlockPos offset_pos = pos.offset(direction);
                 if (!set.contains(offset_pos)) {
-                    findConnectedBlocks(world, offset_pos, validator_connect, validator, set, founded_set);
+                    founded_set = findConnectedBlocks(world, offset_pos, validator_connect, validator, set, founded_set);
                 }
             }
         }
@@ -75,7 +77,7 @@ public class MultiBlockHelper {
             for (Direction direction : Direction.values()) {
                 BlockPos offset_pos = pos.offset(direction);
                 if (!set.contains(offset_pos)) {
-                    scanConnectedBlocks(world, offset_pos, validator, set);
+                    set = scanConnectedBlocks(world, offset_pos, validator, set);
                 }
             }
         }
@@ -148,33 +150,81 @@ public class MultiBlockHelper {
     }
 
     /**
-     * Find a cube structure with valid outline and inner blocks from a starting pos.
+     * Get the min length of the X,Y,Z length of the box.
+     * @param min_pos Min pos of the box.
+     * @param max_pos Max pos of the box.
+     * @return The min length.
+     */
+    public static int getMinSize(BlockPos min_pos, BlockPos max_pos) {
+        int xl = max_pos.getX() - min_pos.getX();
+        int yl = max_pos.getY() - min_pos.getY();
+        int zl = max_pos.getZ() - min_pos.getZ();
+        return Math.min(xl, Math.min(yl, zl)); //just min(xl, yl, zl)...
+    }
+
+    /**
+     * Try find a cube structure with valid outline and inner blocks from a starting pos.
      * @param world World in.
      * @param pos Starting pos.
      * @param validator_outline The block validator for outline block.
      * @param validator_inner The block validator for core block.
+     * @param validator_must_single Block that's not allowed to have multiple in the structure.
      * @return The CubeStructure object, or null if didn't found any structure.
      */
-    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_outline, Predicate<Block> validator_inner) {
-        HashSet<BlockPos> full_set = scanConnectedBlocks(world, pos, validator_outline.or(validator_inner));
-        BlockPos min_pos = findMinCorner(full_set);
-        BlockPos max_pos = findMaxCorner(full_set);
+    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_outline, Predicate<Block> validator_inner, Predicate<Block> validator_must_single) {
+        HashSet<BlockPos> outline_set = scanConnectedBlocks(world, pos, validator_outline);
+        BlockPos min_pos = findMinCorner(outline_set);
+        BlockPos max_pos = findMaxCorner(outline_set);
+        if (getMinSize(min_pos, max_pos) < 1) {
+            return null;
+        }
+        int must_single_block_count = 0;
         for (int x = min_pos.getX(); x <= max_pos.getX(); x++) {
             for (int y = min_pos.getY(); y <= max_pos.getY(); y++) {
                 for (int z = min_pos.getZ(); z <= max_pos.getZ(); z++) {
                     BlockPos check_pos = new BlockPos(x, y, z);
+                    Block block = world.getBlockState(check_pos).getBlock();
                     if (isOutline(min_pos, max_pos, check_pos)) {
-                        if (!validator_outline.test(world.getBlockState(check_pos).getBlock())) {
+                        if (!validator_outline.test(block)) {
                             return null;
                         }
                     } else {
-                        if (!validator_inner.test(world.getBlockState(check_pos).getBlock())) {
+                        if (!validator_inner.test(block)) {
                             return null;
                         }
+                    }
+                    if (validator_must_single.test(block)) {
+                        if (must_single_block_count >= 1) {
+                            return null;
+                        }
+                        must_single_block_count ++;
                     }
                 }
             }
         }
-        return new CubeStructure(min_pos, max_pos);
+        return new CubeStructure(world, min_pos, max_pos);
+    }
+
+    /**
+     * Try find a battery structure from a starting pos.
+     * @param world World in.
+     * @param pos Starting pos.
+     * @return The BatteryStructure object, or null if didn't found anyone.
+     */
+    public static BatteryStructure validateBatteryStructure(World world, BlockPos pos) {
+        for (BatteryMaterial material : BatteryMaterials.VALUES) {
+            CubeStructure result = validateBoxStructureWithCore(
+                    world,
+                    pos,
+                    material.outline_validator
+                            .or(material.core_validator)
+                            .or(material.interface_validator),
+                    material.inner_validator,
+                    material.core_validator);
+            if (result != null) {
+                return new BatteryStructure(result, material);
+            }
+        }
+        return null;
     }
 }

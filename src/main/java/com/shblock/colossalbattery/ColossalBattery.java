@@ -6,6 +6,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Level;
+import org.cyclops.cyclopscore.config.ConfigHandler;
 import org.cyclops.cyclopscore.init.ItemGroupMod;
 import org.cyclops.cyclopscore.init.ModBaseVersionable;
 import org.cyclops.cyclopscore.proxy.IClientProxy;
@@ -35,6 +36,13 @@ public class ColossalBattery extends ModBaseVersionable<ColossalBattery> {
     @Override
     protected ICommonProxy constructCommonProxy() {
         return new CommonProxy();
+    }
+
+    @Override
+    protected void onConfigsRegister(ConfigHandler configHandler) {
+        super.onConfigsRegister(configHandler);
+
+        Configs.RegisterConfig(configHandler);
     }
 
     public static void clog(String message) {
