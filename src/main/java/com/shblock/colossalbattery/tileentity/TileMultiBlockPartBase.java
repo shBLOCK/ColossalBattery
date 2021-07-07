@@ -1,5 +1,8 @@
 package com.shblock.colossalbattery.tileentity;
 
+import com.shblock.colossalbattery.block.BlockMultiBlockPartBase;
+import lombok.experimental.Delegate;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
@@ -7,11 +10,24 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 
-public class TileMultiBlockPartBase extends CyclopsTileEntity {
+public class TileMultiBlockPartBase extends CyclopsTileEntity implements CyclopsTileEntity.ITickingTile {
+    @Delegate
+    private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
+
     public BlockPos core_pos;
 
     public TileMultiBlockPartBase(TileEntityType<?> type) {
         super(type);
+    }
+
+    public void onConstruct() {
+        BlockMultiBlockPartBase block = (BlockMultiBlockPartBase) this.world.getBlockState(this.pos).getBlock();
+        block.setFormed(this.world, this.pos, true);
+    }
+
+    public void onDeconstruct() {
+        BlockMultiBlockPartBase block = (BlockMultiBlockPartBase) this.world.getBlockState(this.pos).getBlock();
+        block.setFormed(this.world, this.pos, false);
     }
 
     public boolean isFormed() {
@@ -19,9 +35,11 @@ public class TileMultiBlockPartBase extends CyclopsTileEntity {
     }
 
     public TileBatteryCore getCoreTile() {
-        TileEntity te = this.world.getTileEntity(this.core_pos);
-        if (te instanceof TileBatteryCore) {
-            return (TileBatteryCore) te;
+        if (isFormed()) {
+            TileEntity te = this.world.getTileEntity(this.core_pos);
+            if (te instanceof TileBatteryCore) {
+                return (TileBatteryCore) te;
+            }
         }
         return null;
     }
@@ -31,6 +49,8 @@ public class TileMultiBlockPartBase extends CyclopsTileEntity {
         super.read(tag);
         if (tag.contains("core_pos")) {
             this.core_pos = NBTUtil.readBlockPos(tag.getCompound("core_pos"));
+        } else {
+            this.core_pos = null;
         }
     }
 
@@ -50,5 +70,13 @@ public class TileMultiBlockPartBase extends CyclopsTileEntity {
         if (tile_core instanceof TileBatteryCore) {
             ((TileBatteryCore) tile_core).onDestroy();
         }
+        this.core_pos = null;
+        markDirty();
+        sendUpdate();
+    }
+
+    @Override
+    public void tick() {
+        this.tickingTileComponent.tick();
     }
 }

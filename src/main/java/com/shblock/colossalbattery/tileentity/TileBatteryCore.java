@@ -4,8 +4,10 @@ import com.shblock.colossalbattery.RegistryEntries;
 import com.shblock.colossalbattery.helper.BatteryStructure;
 import com.shblock.colossalbattery.helper.MathHelper;
 import com.shblock.colossalbattery.helper.MultiBlockHelper;
+import com.shblock.colossalbattery.material.BatteryMaterial;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.LazyOptional;
@@ -13,6 +15,8 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import org.cyclops.integrateddynamics.capability.energystorage.IEnergyStorageCapacity;
 
 public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergyStorageCapacity {
+    private static final AxisAlignedBB NONE = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+
     private BatteryStructure structure;
     private long energy = 0;
     private long capacity = 0;
@@ -38,6 +42,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         this.transfer_rate = this.structure.getTransferRate();
         this.structure.construct(this.pos);
         markDirty();
+        sendUpdate();
         return true;
     }
 
@@ -47,7 +52,9 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 //            setCapacity(0);
             this.structure.deconstruct();
             this.structure = null;
+            this.core_pos = null;
             markDirty();
+            sendUpdate();
         }
     }
 
@@ -55,14 +62,39 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         player.sendStatusMessage(new StringTextComponent(Long.toString(this.energy) + "/" + Long.toString(this.capacity)), true);
     }
 
+    public int[] getStructureSize() {
+        if (!isFormed()) {
+            return null;
+        }
+        return this.structure.getStructureSize();
+    }
+
+    public int[] getRenderOffset() {
+        if (!isFormed()) {
+            return null;
+        }
+        return this.structure.getRenderOffset();
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        if (!isFormed()) {
+            return NONE;
+        }
+        return this.structure.getRenderBoundingBox();
+    }
+
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
         if (tag.contains("structure")) {
             this.structure = BatteryStructure.fromNBT(tag.getCompound("structure"));
+        } else {
+            this.structure = null;
         }
         this.energy = tag.getLong("energy");
         this.capacity = tag.getLong("capacity");
+        this.transfer_rate = tag.getInt("transfer_rate");
     }
 
     @Override
@@ -73,6 +105,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         }
         tag.putLong("energy", this.energy);
         tag.putLong("capacity", this.capacity);
+        tag.putInt("transfer_rate", this.transfer_rate);
         return tag;
     }
 
@@ -83,6 +116,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     public void setCapacity(long capacity) {
         this.capacity = capacity;
         markDirty();
+        sendUpdate();
     }
 
     @Override
@@ -97,6 +131,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     public void setEnergy(long energy) {
         this.energy = energy;
         markDirty();
+        sendUpdate();
     }
 
     public void setEnergy(int energy) {
@@ -105,6 +140,11 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     public int getTransferRate() {
         return this.transfer_rate;
+    }
+
+    public BatteryMaterial getMaterial() {
+        if (this.structure == null) return null;
+        return this.structure.material;
     }
 
     @Override

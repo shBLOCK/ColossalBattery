@@ -71,6 +71,7 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
     }
 
     private void autoOutput(TileBatteryCore core_tile) {
+        if (core_tile == null) return;
         for (Direction facing : Direction.values()) {
             IEnergyStorage energyStorage = EnergyHelpers.getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
             if (energyStorage != null) {
@@ -81,6 +82,7 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
     }
 
     private void autoInput(TileBatteryCore core_tile) {
+        if (core_tile == null) return;
         for (Direction facing : Direction.values()) {
             IEnergyStorage energyStorage = EnergyHelpers.getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
             if (energyStorage != null) {
@@ -99,10 +101,13 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
                         break;
                     case INPUT:
                         autoInput(getCoreTile());
+                        break;
                     case OUTPUT:
                         autoOutput(getCoreTile());
+                        break;
                 }
             }
         }
+        super.tick();
     }
 }

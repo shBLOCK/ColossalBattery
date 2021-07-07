@@ -2,8 +2,12 @@ package com.shblock.colossalbattery.block;
 
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
 import com.shblock.colossalbattery.tileentity.TileMultiBlockPartBase;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -18,23 +22,42 @@ import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 import java.util.function.Supplier;
 
 public class BlockMultiBlockPartBase extends BlockTile {
+    public static final BooleanProperty FORMED = BooleanProperty.create("formed");
+
     public BlockMultiBlockPartBase(Properties properties, Supplier<CyclopsTileEntity> tileEntitySupplier) {
         super(properties, tileEntitySupplier);
+        this.setDefaultState(this.getStateContainer().getBaseState().with(FORMED, false));
+    }
+
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(FORMED);
+        super.fillStateContainer(builder);
+    }
+
+    public void setFormed(World world, BlockPos pos, boolean formed) {
+        BlockState bs = world.getBlockState(pos);
+        if (bs.get(FORMED) != formed) {
+            world.setBlockState(pos, bs.with(FORMED, formed));
+            world.notifyNeighborsOfStateChange(pos, getBlock());
+        }
     }
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (!world.isRemote()) {
-            if (!player.isSneaking()) {
+            if (!player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
                 TileMultiBlockPartBase tile = (TileMultiBlockPartBase) world.getTileEntity(pos);
                 if (tile != null) {
                     if (tile instanceof TileBatteryCore) {
                         ((TileBatteryCore) tile).onStructureRightClick(pos, player);
+                        return ActionResultType.SUCCESS;
                     } else if (tile.isFormed()) {
                         TileEntity core_tile = world.getTileEntity(tile.core_pos);
                         if (core_tile instanceof TileBatteryCore) {
                             ((TileBatteryCore) core_tile).onStructureRightClick(pos, player);
                         }
+                        return ActionResultType.SUCCESS;
                     }
                 }
             }
@@ -75,9 +98,8 @@ public class BlockMultiBlockPartBase extends BlockTile {
         super.onBlockHarvested(world, pos, blockState, player);
     }
 
-//    @Override
-//    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-//        onDestroy(world, pos);
-//        super.onReplaced(state, world, pos, newState, isMoving);
-//    }
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return state.get(FORMED) ? BlockRenderType.INVISIBLE : super.getRenderType(state);
+    }
 }

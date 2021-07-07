@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
+import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 
 public class TileMultiBlockDummy extends TileMultiBlockPartBase {
     private BlockState blockState;
@@ -20,6 +21,7 @@ public class TileMultiBlockDummy extends TileMultiBlockPartBase {
     public void setBlockStateIn(BlockState blockState) {
         this.blockState = blockState;
         markDirty();
+        sendUpdate();
     }
 
     public BlockState getBlockStateIn() {
@@ -31,6 +33,7 @@ public class TileMultiBlockDummy extends TileMultiBlockPartBase {
         tile.setBlockStateIn(world.getBlockState(pos));
         tile.core_pos = core_pos;
         tile.markDirty();
+        tile.sendUpdate();
         world.setBlockState(pos, RegistryEntries.BLOCK_MULTI_BLOCK_DUMMY.getDefaultState());
         world.setTileEntity(pos, tile);
     }

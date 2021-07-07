@@ -20,8 +20,8 @@ public class BlockBatteryInterface extends BlockMultiBlockPartBase {
     public static final EnumProperty<EnumIOMode> MODE = EnumProperty.create("mode", EnumIOMode.class);
 
     public BlockBatteryInterface() {
-        super(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.GRAY), TileBatteryInterface::new);
-        this.setDefaultState(this.getStateContainer().getBaseState().with(MODE, EnumIOMode.NORMAL));
+        super(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.GRAY).notSolid().setOpaque((blockState, world, pos) -> false), TileBatteryInterface::new);
+        this.setDefaultState(this.getDefaultState().with(MODE, EnumIOMode.NORMAL));
     }
 
     @Override
@@ -33,15 +33,20 @@ public class BlockBatteryInterface extends BlockMultiBlockPartBase {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (!world.isRemote()) {
-            if (player.isSneaking()) {
-                if (player.getHeldItem(hand).isEmpty()) {
-                    int old_mode = state.get(MODE).ordinal();
-                    old_mode ++;
-                    if (old_mode >= 3) {
-                        old_mode = 0;
-                    }
-                    state.with(MODE, EnumIOMode.values()[old_mode]);
+            if (player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+                BlockState bs = world.getBlockState(pos);
+                int old_mode = bs.get(MODE).getId();
+                old_mode ++;
+                if (old_mode >= 3) {
+                    old_mode = 0;
                 }
+                world.setBlockState(pos, bs.with(MODE, EnumIOMode.getById(old_mode)));
+                world.notifyNeighborsOfStateChange(pos, state.getBlock());
+                return ActionResultType.SUCCESS;
+            }
+        } else {
+            if (player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+                return ActionResultType.SUCCESS;
             }
         }
         return super.onBlockActivated(state, world, pos, player, hand, hit);

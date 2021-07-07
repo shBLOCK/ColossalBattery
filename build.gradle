@@ -158,6 +158,8 @@ dependencies {
     compile("org.cyclops.colossalchests:ColossalChests:1.16.5-1.7.13-8:deobf") {
 //        transitive = false
     }
+
+    compileOnly "org.projectlombok:lombok:1.16.4"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

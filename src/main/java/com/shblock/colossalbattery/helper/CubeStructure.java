@@ -25,9 +25,9 @@ public class CubeStructure {
 
     public int[] getSize() {
         return new int[] {
-            max_pos.getX() - min_pos.getX(),
-            max_pos.getY() - min_pos.getY(),
-            max_pos.getZ() - min_pos.getZ()
+            max_pos.getX() - min_pos.getX() + 1,
+            max_pos.getY() - min_pos.getY() + 1,
+            max_pos.getZ() - min_pos.getZ() + 1
         };
     }
 
