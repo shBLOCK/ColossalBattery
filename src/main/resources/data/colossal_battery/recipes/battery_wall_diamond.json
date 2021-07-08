@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    "ILI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:diamond"
+    },
+    "L": {
+      "tag": "forge:cobblestone"
+    }
+  },
+  "result": {
+    "item": "colossal_battery:battery_wall_diamond"
+  }
+}

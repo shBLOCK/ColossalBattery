@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "colossal_battery:battery_inner_basic"},
+    {"tag": "forge:dusts/redstone"},
+	{"tag": "forge:dusts/redstone"},
+	{"tag": "forge:dusts/redstone"},
+	{"tag": "forge:dusts/redstone"}
+  ],
+  "result": {
+    "item": "colossal_battery:battery_inner_advanced"
+  }
+}

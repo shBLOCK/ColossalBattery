@@ -12,8 +12,9 @@ public class BatteryMaterial {
     public final Predicate<Block> inner_validator;
     public final Predicate<Block> core_validator;
     public final Predicate<Block> interface_validator;
+    private final boolean explosion_resistance;
 
-    public BatteryMaterial(String name, long capacity_pre_block, int transfer_rate_pre_block, Predicate<Block> outline_validator, Predicate<Block> inner_validator, Predicate<Block> core_validator, Predicate<Block> interface_validator) {
+    public BatteryMaterial(String name, long capacity_pre_block, int transfer_rate_pre_block, Predicate<Block> outline_validator, Predicate<Block> inner_validator, Predicate<Block> core_validator, Predicate<Block> interface_validator, boolean explosion_resistance) {
         this.name = name;
         this.capacity_pre_block = capacity_pre_block;
         this.transfer_rate_pre_block = transfer_rate_pre_block;
@@ -21,6 +22,11 @@ public class BatteryMaterial {
         this.inner_validator = inner_validator;
         this.core_validator = core_validator;
         this.interface_validator = interface_validator;
+        this.explosion_resistance = explosion_resistance;
+    }
+
+    public boolean isExplosionResistance() {
+        return this.explosion_resistance;
     }
 
     public long calculateCapacity(int block_count) {

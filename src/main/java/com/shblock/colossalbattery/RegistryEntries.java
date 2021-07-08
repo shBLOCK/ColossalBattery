@@ -6,6 +6,7 @@ import com.shblock.colossalbattery.block.BlockMultiBlockDummy;
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
 import com.shblock.colossalbattery.tileentity.TileBatteryInterface;
 import com.shblock.colossalbattery.tileentity.TileMultiBlockDummy;
+import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -24,4 +25,7 @@ public class RegistryEntries {
     public static final BlockBatteryInterface BLOCK_BATTERY_INTERFACE = null;
     @ObjectHolder(ColossalBattery.MODID + ":battery_interface")
     public static final TileEntityType<TileBatteryInterface> TILE_BATTERY_INTERFACE = null;
+
+    @ObjectHolder(ColossalBattery.MODID + ":battery_core")
+    public static final BlockItem ITEM_BATTERY_CORE = null;
 }

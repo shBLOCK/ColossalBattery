@@ -2,9 +2,7 @@ package com.shblock.colossalbattery.block;
 
 import com.shblock.colossalbattery.block.state.EnumIOMode;
 import com.shblock.colossalbattery.tileentity.TileBatteryInterface;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +18,14 @@ public class BlockBatteryInterface extends BlockMultiBlockPartBase {
     public static final EnumProperty<EnumIOMode> MODE = EnumProperty.create("mode", EnumIOMode.class);
 
     public BlockBatteryInterface() {
-        super(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.GRAY).notSolid().setOpaque((blockState, world, pos) -> false), TileBatteryInterface::new);
+        super(
+                AbstractBlock.Properties.create(Material.ROCK, MaterialColor.GRAY)
+                        .notSolid()
+                        .setOpaque((blockState, world, pos) -> false)
+                        .hardnessAndResistance(5.0F)
+                        .harvestLevel(0),
+                TileBatteryInterface::new
+        );
         this.setDefaultState(this.getDefaultState().with(MODE, EnumIOMode.NORMAL));
     }
 
@@ -50,5 +55,10 @@ public class BlockBatteryInterface extends BlockMultiBlockPartBase {
             }
         }
         return super.onBlockActivated(state, world, pos, player, hand, hit);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 }

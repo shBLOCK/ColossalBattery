@@ -1,0 +1,35 @@
+{
+  "itemGroup.colossal_battery": "Colossal Battery",
+
+  "block.colossal_battery.battery_core": "Battery Core",
+  "block.colossal_battery.battery_interface": "Battery Interface",
+  "block.colossal_battery.battery_inner_basic": "Basic Battery Filler",
+  "block.colossal_battery.battery_inner_advanced": "Advanced Battery Filler",
+  "block.colossal_battery.battery_inner_ultimate": "Ultimate Battery Filler",
+  "block.colossal_battery.battery_wall_copper": "Copper Battery Wall",
+  "block.colossal_battery.battery_wall_iron": "Iron Battery Wall",
+  "block.colossal_battery.battery_wall_silver": "Silver Battery Wall",
+  "block.colossal_battery.battery_wall_gold": "Gold Battery Wall",
+  "block.colossal_battery.battery_wall_diamond": "Diamond Battery Wall",
+  "block.colossal_battery.battery_wall_obsidian": "Obsidian Battery Wall",
+  "block.colossal_battery.battery_wall_ultimate": "Ultimate Battery Wall",
+
+  "message.colossal_battery.success": "§aStructure construct successful!",
+  "message.colossal_battery.error.too_much_block": "§aStructure construct attempt failed: this structure have too many valid blocks (check if this structure is connected to lots of valid blocks), material:",
+  "message.colossal_battery.error.too_small": "§cStructure construct attempt failed: structure too small, material:",
+  "message.colossal_battery.error.too_big": "§cStructure construct attempt failed: structure too big (max length of this structure §b%d§c is longer then the max length §b%d§c), material:",
+  "message.colossal_battery.error.outline_block_invalid": "§cStructure construct attempt failed: wall block invalid (position: §b%s§c), material:",
+  "message.colossal_battery.error.inner_block_invalid": "§cStructure construct attempt failed: filler block invalid (position: §b%s§c), material:",
+  "message.colossal_battery.error.multiple_core_block": "§cStructure construct attempt failed: found multiple core blocks (the position of one of them: §b%s§c), material:",
+  "message.colossal_battery.error.close_to_another_structure": "§cStructure construct attempt failed: close to another structure (position: §b%s§c), material:",
+
+  "material.cobblestone": "§bCobblestone",
+  "material.copper": "§bCopper",
+  "material.iron": "§bIron",
+  "material.silver": "§bSilver",
+  "material.gold": "§bGold",
+  "material.diamond": "§bDiamond",
+  "material.obsidian": "§bObsidian",
+  "material.menril": "§bMenril",
+  "material.ultimate": "§bUltimate"
+}

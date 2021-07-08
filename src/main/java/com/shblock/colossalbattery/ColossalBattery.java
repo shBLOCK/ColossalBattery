@@ -3,7 +3,6 @@ package com.shblock.colossalbattery;
 import com.shblock.colossalbattery.proxy.ClientProxy;
 import com.shblock.colossalbattery.proxy.CommonProxy;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.Items;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.Level;
 import org.cyclops.cyclopscore.config.ConfigHandler;
@@ -25,7 +24,7 @@ public class ColossalBattery extends ModBaseVersionable<ColossalBattery> {
 
     @Override
     public ItemGroup constructDefaultItemGroup() {
-        return new ItemGroupMod(this, () -> Items.DIAMOND);
+        return new ItemGroupMod(this, () -> RegistryEntries.ITEM_BATTERY_CORE);
     }
 
     @Override
@@ -41,6 +40,8 @@ public class ColossalBattery extends ModBaseVersionable<ColossalBattery> {
     @Override
     protected void onConfigsRegister(ConfigHandler configHandler) {
         super.onConfigsRegister(configHandler);
+
+        configHandler.addConfigurable(new GeneralConfig());
 
         Configs.RegisterConfig(configHandler);
     }

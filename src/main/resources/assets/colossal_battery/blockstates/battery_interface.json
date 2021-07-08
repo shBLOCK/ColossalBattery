@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "formed=false,mode=normal": { "model": "colossal_battery:block/interface_normal" },
+    "formed=false,mode=output": { "model": "colossal_battery:block/interface_output" },
+    "formed=false,mode=input": { "model": "colossal_battery:block/interface_input" },
+    "formed=true,mode=normal": { "model": "colossal_battery:block/interface_normal_formed" },
+    "formed=true,mode=output": { "model": "colossal_battery:block/interface_output_formed" },
+    "formed=true,mode=input": { "model": "colossal_battery:block/interface_input_formed" }
+  }
+}

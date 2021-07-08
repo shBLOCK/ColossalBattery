@@ -9,7 +9,7 @@ public class BlockMultiBlockDummyConfig extends BlockConfig {
                 ColossalBattery._instance,
                 "multi_block_dummy",
                 eConfig -> new BlockMultiBlockDummy(),
-                getDefaultItemConstructor(ColossalBattery._instance)
+                null
         );
     }
 }

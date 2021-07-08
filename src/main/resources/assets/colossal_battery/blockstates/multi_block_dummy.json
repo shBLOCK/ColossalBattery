@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "formed=false": { "model": "colossal_battery:block/empty" },
+    "formed=true": { "model": "colossal_battery:block/empty" }
+  }
+}

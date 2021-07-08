@@ -1,5 +1,6 @@
 package com.shblock.colossalbattery.block;
 
+import com.shblock.colossalbattery.ColossalBattery;
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
 import com.shblock.colossalbattery.tileentity.TileMultiBlockPartBase;
 import net.minecraft.block.Block;
@@ -14,6 +15,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import org.cyclops.cyclopscore.block.BlockTile;
@@ -69,7 +71,7 @@ public class BlockMultiBlockPartBase extends BlockTile {
         if (!world.isRemote()) {
             TileMultiBlockPartBase tile = (TileMultiBlockPartBase) world.getTileEntity(pos);
             if (tile != null) {
-                tile.onDestroy();
+                tile.deconstructStructure();
             }
         }
     }
@@ -101,5 +103,20 @@ public class BlockMultiBlockPartBase extends BlockTile {
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return state.get(FORMED) ? BlockRenderType.INVISIBLE : super.getRenderType(state);
+    }
+
+    @Override
+    public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
+        ColossalBattery.clog("getExplosionResistance");
+        if (state.get(FORMED)) {
+            TileMultiBlockPartBase tile = (TileMultiBlockPartBase) world.getTileEntity(pos);
+            if (tile != null) {
+                TileBatteryCore core_tile = tile.getCoreTile();
+                if (core_tile != null) {
+                    return core_tile.getMaterial().isExplosionResistance() ? Float.MAX_VALUE : 0;
+                }
+            }
+        }
+        return 0;
     }
 }

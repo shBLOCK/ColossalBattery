@@ -15,6 +15,9 @@ public class Configs {
         for (EnumInnerBlockType type : EnumInnerBlockType.values()) {
             configHandler.addConfigurable(new BlockInnerMaterialConfig(type));
         }
+        for (EnumBatteryWallType type : EnumBatteryWallType.values()) {
+            configHandler.addConfigurable(new BlockBatteryWallConfig(type));
+        }
 
         //TileEntities
         configHandler.addConfigurable(new TileBatteryCoreConfig());

@@ -5,6 +5,7 @@ import com.shblock.colossalbattery.helper.BatteryStructure;
 import com.shblock.colossalbattery.helper.MathHelper;
 import com.shblock.colossalbattery.helper.MultiBlockHelper;
 import com.shblock.colossalbattery.material.BatteryMaterial;
+import lombok.experimental.Delegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -12,9 +13,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 import org.cyclops.integrateddynamics.capability.energystorage.IEnergyStorageCapacity;
 
-public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergyStorageCapacity {
+import javax.annotation.Nullable;
+
+public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergyStorageCapacity, CyclopsTileEntity.ITickingTile {
+    @Delegate
+    private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
+
     private static final AxisAlignedBB NONE = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     private BatteryStructure structure;
@@ -32,8 +39,8 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         return this.structure != null;
     }
 
-    public boolean detectStructure() {
-        BatteryStructure result = MultiBlockHelper.validateBatteryStructure(this.world, this.pos);
+    public boolean detectStructure(@Nullable PlayerEntity player) {
+        BatteryStructure result = MultiBlockHelper.validateBatteryStructure(this.world, this.pos, player);
         if (result == null) {
             return false;
         }
@@ -47,7 +54,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     }
 
     @Override
-    public void onDestroy() {
+    public void deconstructStructure() {
         if (this.structure != null) {
 //            setCapacity(0);
             this.structure.deconstruct();
@@ -60,6 +67,11 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     public void onStructureRightClick(BlockPos click_pos, PlayerEntity player) {
         player.sendStatusMessage(new StringTextComponent(Long.toString(this.energy) + "/" + Long.toString(this.capacity)), true);
+    }
+
+    @Override
+    public TileBatteryCore getCoreTile() {
+        return this;
     }
 
     public int[] getStructureSize() {
@@ -101,6 +113,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     public CompoundNBT write(CompoundNBT tag) {
         tag = super.write(tag);
         if (this.structure != null) {
+            System.out.println(this.structure.world);
             tag.put("structure", this.structure.toNBT());
         }
         tag.putLong("energy", this.energy);
@@ -152,13 +165,15 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         if (!isFormed()) {
             return 0;
         }
-        int capacity_left = MathHelper.longToInt(this.capacity - this.energy);
-        int max_transfer = Math.max(maxReceive, this.transfer_rate);
-        int to_transfer = Math.min(capacity_left, max_transfer);
+//        int capacity_left = MathHelper.longToInt(this.capacity - this.energy);
+        long capacity_left = this.capacity - this.energy;
+        long max_transfer = Math.max(maxReceive, this.transfer_rate);
+        long to_transfer = Math.min(capacity_left, max_transfer);
+        int int_to_transfer = MathHelper.longToInt(to_transfer);
         if (!simulate) {
-            setEnergy(this.energy + to_transfer);
+            setEnergy(this.energy + int_to_transfer);
         }
-        return to_transfer;
+        return int_to_transfer;
     }
 
     @Override
@@ -166,13 +181,15 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         if (!isFormed()) {
             return 0;
         }
-        int energy_left = MathHelper.longToInt(this.energy);
-        int max_transfer = Math.max(maxExtract, this.transfer_rate);
-        int to_transfer = Math.min(energy_left, max_transfer);
+//        int energy_left = MathHelper.longToInt(this.energy);
+        long energy_left = this.energy;
+        long max_transfer = Math.max(maxExtract, this.transfer_rate);
+        long to_transfer = Math.min(energy_left, max_transfer);
+        int int_to_transfer = MathHelper.longToInt(to_transfer);
         if (!simulate) {
-            setEnergy(this.energy - to_transfer);
+            setEnergy(this.energy - int_to_transfer);
         }
-        return to_transfer;
+        return int_to_transfer;
     }
 
     @Override
@@ -193,5 +210,10 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     @Override
     public boolean canReceive() {
         return isFormed();
+    }
+
+    @Override
+    public void tick() {
+        this.tickingTileComponent.tick();
     }
 }

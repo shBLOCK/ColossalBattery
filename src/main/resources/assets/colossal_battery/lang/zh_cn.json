@@ -1,0 +1,35 @@
+{
+  "itemGroup.colossal_battery": "巨型电池",
+
+  "block.colossal_battery.battery_core": "电池核心",
+  "block.colossal_battery.battery_interface": "电池访问口",
+  "block.colossal_battery.battery_inner_basic": "基础电池填充物",
+  "block.colossal_battery.battery_inner_advanced": "高级电池填充物",
+  "block.colossal_battery.battery_inner_ultimate": "终极电池填充物",
+  "block.colossal_battery.battery_wall_copper": "铜电池外壁",
+  "block.colossal_battery.battery_wall_iron": "铁电池外壁",
+  "block.colossal_battery.battery_wall_silver": "银电池外壁",
+  "block.colossal_battery.battery_wall_gold": "金电池外壁",
+  "block.colossal_battery.battery_wall_diamond": "钻石电池外壁",
+  "block.colossal_battery.battery_wall_obsidian": "黑曜石电池外壁",
+  "block.colossal_battery.battery_wall_ultimate": "终极电池外壁",
+
+  "message.colossal_battery.success": "§a结构构建成功！",
+  "message.colossal_battery.error.too_much_block": "§c结构构建失败：这个结构有太多方块（请检查此结构是否连接了太多有效方块），结构材料：",
+  "message.colossal_battery.error.too_small": "§c结构构建尝试失败：结构过小或未找到结构，结构材料：",
+  "message.colossal_battery.error.too_big": "§c结构构建尝试失败：结构过大（结构最长边 §b%d§c 大于最大尺寸 §b%d§c），结构材料：",
+  "message.colossal_battery.error.outline_block_invalid": "§c结构构建尝试失败：外壁方块不可用（坐标：§b%s§c），结构材料：",
+  "message.colossal_battery.error.inner_block_invalid": "§c结构构建尝试失败：填充物方块不可用（坐标：§b%s§c），结构材料：",
+  "message.colossal_battery.error.multiple_core_block": "§c结构构建尝试失败：找到多个核心方块（其中之一坐标：§b%s§c），结构材料：",
+  "message.colossal_battery.error.close_to_another_structure": "§c结构构建尝试失败：与另一个结构相接（坐标：§b%s§c），结构材料：",
+
+  "material.cobblestone": "§b圆石",
+  "material.copper": "§b铜",
+  "material.iron": "§b铁",
+  "material.silver": "§b银",
+  "material.gold": "§b金",
+  "material.diamond": "§b钻石",
+  "material.obsidian": "§b黑曜石",
+  "material.menril": "§b门瑞欧",
+  "material.ultimate": "§b终极"
+}

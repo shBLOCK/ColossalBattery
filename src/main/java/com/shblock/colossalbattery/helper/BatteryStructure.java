@@ -51,7 +51,7 @@ public class BatteryStructure extends CubeStructure {
                 min_pos.getY() - core_pos.getY(),
                 min_pos.getZ() - core_pos.getZ()
         };
-        this.render_bounding_box_cache = new AxisAlignedBB(min_pos, max_pos);
+        this.render_bounding_box_cache = new AxisAlignedBB(min_pos.subtract(new Vector3i(1, 1, 1)), max_pos.add(new Vector3i(1, 1, 1)));
     }
 
     public void construct(BlockPos core_pos) {

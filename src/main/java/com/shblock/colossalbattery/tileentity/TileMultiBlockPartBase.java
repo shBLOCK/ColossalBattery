@@ -10,10 +10,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 
-public class TileMultiBlockPartBase extends CyclopsTileEntity implements CyclopsTileEntity.ITickingTile {
-    @Delegate
-    private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
-
+public class TileMultiBlockPartBase extends CyclopsTileEntity {
     public BlockPos core_pos;
 
     public TileMultiBlockPartBase(TileEntityType<?> type) {
@@ -63,20 +60,17 @@ public class TileMultiBlockPartBase extends CyclopsTileEntity implements Cyclops
         return tag;
     }
 
-    public void onDestroy() {
+    public void deconstructStructure() {
         if (this.world.isRemote) return;
         if (!isFormed()) return;
         TileEntity tile_core = this.world.getTileEntity(this.core_pos);
         if (tile_core instanceof TileBatteryCore) {
-            ((TileBatteryCore) tile_core).onDestroy();
+            ((TileBatteryCore) tile_core).deconstructStructure();
         }
         this.core_pos = null;
         markDirty();
-        sendUpdate();
-    }
-
-    @Override
-    public void tick() {
-        this.tickingTileComponent.tick();
+        if (this instanceof ITickingTile) {
+            sendUpdate();
+        }
     }
 }

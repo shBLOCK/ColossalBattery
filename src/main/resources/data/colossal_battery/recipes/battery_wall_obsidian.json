@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PLP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:obsidian"
+    },
+    "L": {
+      "tag": "forge:cobblestone"
+    }
+  },
+  "result": {
+    "item": "colossal_battery:battery_wall_obsidian"
+  }
+}

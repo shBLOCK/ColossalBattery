@@ -17,6 +17,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.logging.log4j.Level;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -114,7 +115,7 @@ public class RenderBattery6Face extends RenderBatteryBase {
     public static void onPostTextureStitch(TextureStitchEvent.Post event) {
         if (event.getMap().getTextureLocation().equals(Atlases.CHEST_ATLAS)) {
             for (ResourceLocation value : TEXTURES_BATTERY.values()) {
-                System.out.println(event.getMap().getSprite(value).toString());
+                ColossalBattery.clog(Level.DEBUG, "Texture stitch successful: " + event.getMap().getSprite(value).toString());
             }
         }
     }

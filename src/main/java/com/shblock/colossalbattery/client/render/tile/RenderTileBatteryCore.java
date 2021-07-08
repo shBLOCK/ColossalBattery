@@ -2,6 +2,7 @@ package com.shblock.colossalbattery.client.render.tile;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.shblock.colossalbattery.client.render.battery.RenderBatteryBase;
+import com.shblock.colossalbattery.material.BatteryMaterialRenders;
 import com.shblock.colossalbattery.material.BatteryMaterials;
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -19,7 +20,7 @@ public class RenderTileBatteryCore extends TileEntityRenderer<TileBatteryCore> {
     @Override
     public void render(TileBatteryCore tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (tileEntity.isFormed()) {
-            RenderBatteryBase battery_render = BatteryMaterials.getRender(tileEntity.getMaterial());
+            RenderBatteryBase battery_render = BatteryMaterialRenders.getRender(tileEntity.getMaterial());
             matrixStack.push();
             int[] offset = tileEntity.getRenderOffset();
             matrixStack.translate(offset[0], offset[1], offset[2]);

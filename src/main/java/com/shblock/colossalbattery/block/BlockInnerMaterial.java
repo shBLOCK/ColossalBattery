@@ -9,7 +9,11 @@ public class BlockInnerMaterial extends Block {
     public final EnumInnerBlockType type;
 
     public BlockInnerMaterial(EnumInnerBlockType type) {
-        super(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.MAGENTA));
+        super(
+                AbstractBlock.Properties.create(Material.ROCK, MaterialColor.LIGHT_GRAY)
+                        .hardnessAndResistance(5.0F)
+                        .harvestLevel(0)
+        );
         this.type = type;
     }
 }
