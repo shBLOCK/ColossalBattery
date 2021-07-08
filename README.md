@@ -1,4 +1,4 @@
-This mod requires the [Cyclops Core](https://www.curseforge.com/minecraft/mc-mods/cyclops-core "Cyclops Core") library!    
+This mod requires the [Cyclops Core](https://www.curseforge.com/minecraft/mc-mods/cyclops-core "Cyclops Core") library!      
 Description
 ==================
 Energy batteries, but multi block!
