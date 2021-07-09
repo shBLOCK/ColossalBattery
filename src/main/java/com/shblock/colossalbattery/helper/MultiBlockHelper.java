@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Level;
@@ -18,12 +19,15 @@ import org.cyclops.cyclopscore.helper.BlockHelpers;
 import org.cyclops.cyclopscore.helper.TileHelpers;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class MultiBlockHelper {
+    private static ArrayList<IFormattableTextComponent> error_list = new ArrayList<>();
+    
     /**
      * Find valid target blocks that's connected with the starting pos with valid connect blocks or another valid target block.
      * @param world World in.
@@ -163,6 +167,21 @@ public class MultiBlockHelper {
     }
 
     /**
+     * Check if the pos is on the frame of the box that's defined by min pos and max pos.
+     * @param min_pos Min pos of the box.
+     * @param max_pos Max pos of the box.
+     * @param pos The pos to check.
+     * @return Is the pos on the frame of the box.
+     */
+    public static boolean isFrame(BlockPos min_pos, BlockPos max_pos, BlockPos pos) {
+        int count = 0;
+        if (pos.getX() == min_pos.getX() || pos.getX() == max_pos.getX()) count ++;
+        if (pos.getY() == min_pos.getY() || pos.getY() == max_pos.getY()) count ++;
+        if (pos.getZ() == min_pos.getZ() || pos.getZ() == max_pos.getZ()) count ++;
+        return count >= 2;
+    }
+
+    /**
      * Get the min length of the X,Y,Z length of the box.
      * @param min_pos Min pos of the box.
      * @param max_pos Max pos of the box.
@@ -195,26 +214,25 @@ public class MultiBlockHelper {
      * @param validator_outline The block validator for outline block.
      * @param validator_inner The block validator for core block.
      * @param validator_must_single Block that's not allowed to have multiple in the structure.
-     * @param player The player that tries to form this structure (To send error message to), can be null.
      * @return The CubeStructure object, or null if didn't found any structure.
      */
-    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_outline, Predicate<Block> validator_inner, Predicate<Block> validator_must_single, @Nullable PlayerEntity player, @Nullable TranslationTextComponent material_name) {
+    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_frame, Predicate<Block> validator_outline, Predicate<Block> validator_inner, Predicate<Block> validator_must_single, TranslationTextComponent material_name) {
         HashSet<BlockPos> outline_set;
         try {
-            outline_set = scanConnectedBlocks(world, pos, validator_outline);
+            outline_set = scanConnectedBlocks(world, pos, validator_outline.or(validator_frame));
         } catch (StackOverflowError ignored) {
-            if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.too_much_block").append(material_name), false);
+            error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_much_block").append(material_name));
             ColossalBattery.clog(Level.WARN, "A structure have too much connected blocks caused StackOverflowError, the structure can't be validated, world: " + world + " , starting pos: " + pos);
             return null;
         }
         BlockPos min_pos = findMinCorner(outline_set);
         BlockPos max_pos = findMaxCorner(outline_set);
         if (getMinSize(min_pos, max_pos) < 1) {
-            if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.too_small").append(material_name), false);
+            error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_small").append(material_name));
             return null;
         }
         if (getMaxSize(min_pos, max_pos) >= GeneralConfig.max_size) {
-            if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.too_big", getMaxSize(min_pos, max_pos), GeneralConfig.max_size).append(material_name), false);
+            error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_big", getMaxSize(min_pos, max_pos), GeneralConfig.max_size).append(material_name));
             return null;
         }
         int must_single_block_count = 0;
@@ -223,20 +241,24 @@ public class MultiBlockHelper {
                 for (int z = min_pos.getZ(); z <= max_pos.getZ(); z++) {
                     BlockPos check_pos = new BlockPos(x, y, z);
                     Block block = world.getBlockState(check_pos).getBlock();
-                    if (isOutline(min_pos, max_pos, check_pos)) {
+                    if (isFrame(min_pos, max_pos, check_pos)) {
+                        if (!validator_frame.test(block)) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.frame_block_invalid", check_pos.toString()).append(material_name));
+                        }
+                    } else if (isOutline(min_pos, max_pos, check_pos)) {
                         if (!validator_outline.test(block)) {
-                            if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.outline_block_invalid", check_pos.toString()).append(material_name), false);
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.outline_block_invalid", check_pos.toString()).append(material_name));
                             return null;
                         }
                     } else {
                         if (!validator_inner.test(block)) {
-                            if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.inner_block_invalid", check_pos.toString()).append(material_name), false);
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.inner_block_invalid", check_pos.toString()).append(material_name));
                             return null;
                         }
                     }
                     if (validator_must_single.test(block)) {
                         if (must_single_block_count >= 1) {
-                            if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.multiple_core_block", check_pos.toString()).append(material_name), false);
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.multiple_core_block", check_pos.toString()).append(material_name));
                             return null;
                         }
                         must_single_block_count ++;
@@ -248,6 +270,63 @@ public class MultiBlockHelper {
     }
 
     /**
+     * Send all of the error messages in the error_list to player.
+     * @param player The player to send to.
+     */
+    public static void sendAllErrorMessage(PlayerEntity player) {
+        for (IFormattableTextComponent textComponent : error_list) {
+            player.sendStatusMessage(textComponent, false);
+        }
+    }
+
+    public static boolean isClingWithAnotherStructure(BlockPos min_pos, BlockPos max_pos, World world, TranslationTextComponent material_name) {
+        for (int x = min_pos.getX(); x <= max_pos.getX(); x++) {
+            for (int y = min_pos.getY(); y <= max_pos.getY(); y++) {
+                for (int z = min_pos.getZ(); z <= max_pos.getZ(); z++) {
+                    BlockPos blockPos = new BlockPos(x, y, z);
+                    if (blockPos.getX() == min_pos.getX()) {
+                        if (world.getTileEntity(blockPos.west()) instanceof TileMultiBlockPartBase) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.west()).append(material_name));
+                            return true;
+                        }
+                    }
+                    if (blockPos.getX() == max_pos.getX()) {
+                        if (world.getTileEntity(blockPos.east()) instanceof TileMultiBlockPartBase) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.east()).append(material_name));
+                            return true;
+                        }
+                    }
+                    if (blockPos.getY() == min_pos.getY()) {
+                        if (world.getTileEntity(blockPos.down()) instanceof TileMultiBlockPartBase) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.down()).append(material_name));
+                            return true;
+                        }
+                    }
+                    if (blockPos.getY() == max_pos.getY()) {
+                        if (world.getTileEntity(blockPos.up()) instanceof TileMultiBlockPartBase) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.up()).append(material_name));
+                            return true;
+                        }
+                    }
+                    if (blockPos.getZ() == min_pos.getZ()) {
+                        if (world.getTileEntity(blockPos.north()) instanceof TileMultiBlockPartBase) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.north()).append(material_name));
+                            return true;
+                        }
+                    }
+                    if (blockPos.getZ() == max_pos.getZ()) {
+                        if (world.getTileEntity(blockPos.south()) instanceof TileMultiBlockPartBase) {
+                            error_list.add(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.south()).append(material_name));
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Try find a battery structure from a starting pos.
      * @param world World in.
      * @param pos Starting pos.
@@ -255,6 +334,7 @@ public class MultiBlockHelper {
      * @return The BatteryStructure object, or null if didn't found anyone.
      */
     public static BatteryStructure validateBatteryStructure(World world, BlockPos pos, @Nullable PlayerEntity player) {
+        error_list.clear();
         for (BatteryMaterial material : BatteryMaterials.VALUES) {
             TranslationTextComponent material_name = new TranslationTextComponent("material." + material.name);
             CubeStructure result = validateBoxStructureWithCore(
@@ -263,54 +343,15 @@ public class MultiBlockHelper {
                     material.outline_validator
                             .or(material.core_validator)
                             .or(material.interface_validator),
+                    material.frame_validator,
                     material.inner_validator,
                     material.core_validator,
-                    player,
                     material_name
             );
             if (result != null) {
-                for (int x = result.min_pos.getX(); x <= result.max_pos.getX(); x++) {
-                    for (int y = result.min_pos.getY(); y <= result.max_pos.getY(); y++) {
-                        for (int z = result.min_pos.getZ(); z <= result.max_pos.getZ(); z++) {
-                            BlockPos blockPos = new BlockPos(x, y, z);
-                            if (blockPos.getX() == result.min_pos.getX()) {
-                                if (world.getTileEntity(blockPos.west()) instanceof TileMultiBlockPartBase) {
-                                    if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.west()).append(material_name), false);
-                                    return null;
-                                }
-                            }
-                            if (blockPos.getX() == result.max_pos.getX()) {
-                                if (world.getTileEntity(blockPos.east()) instanceof TileMultiBlockPartBase) {
-                                    if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.east()).append(material_name), false);
-                                    return null;
-                                }
-                            }
-                            if (blockPos.getY() == result.min_pos.getY()) {
-                                if (world.getTileEntity(blockPos.down()) instanceof TileMultiBlockPartBase) {
-                                    if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.down()).append(material_name), false);
-                                    return null;
-                                }
-                            }
-                            if (blockPos.getY() == result.max_pos.getY()) {
-                                if (world.getTileEntity(blockPos.up()) instanceof TileMultiBlockPartBase) {
-                                    if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.up()).append(material_name), false);
-                                    return null;
-                                }
-                            }
-                            if (blockPos.getZ() == result.min_pos.getZ()) {
-                                if (world.getTileEntity(blockPos.north()) instanceof TileMultiBlockPartBase) {
-                                    if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.north()).append(material_name), false);
-                                    return null;
-                                }
-                            }
-                            if (blockPos.getZ() == result.max_pos.getZ()) {
-                                if (world.getTileEntity(blockPos.south()) instanceof TileMultiBlockPartBase) {
-                                    if (player != null) player.sendStatusMessage(new TranslationTextComponent("message.colossal_battery.error.close_to_another_structure", blockPos.south()).append(material_name), false);
-                                    return null;
-                                }
-                            }
-                        }
-                    }
+                if (isClingWithAnotherStructure(result.min_pos, result.max_pos, world, material_name)) {
+                    sendAllErrorMessage(player);
+                    return null;
                 }
                 return new BatteryStructure(result, material);
             }

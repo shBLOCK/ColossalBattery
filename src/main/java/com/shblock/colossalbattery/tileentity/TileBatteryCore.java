@@ -113,7 +113,6 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     public CompoundNBT write(CompoundNBT tag) {
         tag = super.write(tag);
         if (this.structure != null) {
-            System.out.println(this.structure.world);
             tag.put("structure", this.structure.toNBT());
         }
         tag.putLong("energy", this.energy);

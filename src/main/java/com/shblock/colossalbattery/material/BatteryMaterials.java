@@ -61,6 +61,7 @@ public class BatteryMaterials {
             block -> BlockBatteryWall.matchMaterialName(block, "ultimate"),
             new InnerValidatorBase(10),
             CORE_VALIDATOR, INTERFACE_VALIDATOR, true);
+//    public static final BatteryMaterial MEK_
 
     public static final BatteryMaterial[] VALUES = new BatteryMaterial[] {
             COBBLESTONE,
