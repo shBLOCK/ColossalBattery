@@ -10,13 +10,16 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class NBTHelper {
     public static StringNBT writeWorld(World world) {
-        return StringNBT.valueOf(world.getDimensionKey().getLocation().toString());
+        if (world != null) {
+            return StringNBT.valueOf(world.getDimensionKey().getLocation().toString());
+        }
+        return StringNBT.valueOf("");
     }
 
     public static World readWorld(String string) {
         RegistryKey<World> worldRegistryKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(string));
         return DistExecutor.unsafeRunForDist(
-                () -> ClientWorldGetter::readWorldClient,
+                () -> () -> ClientWorldGetter.readWorldClient(worldRegistryKey),
                 () -> () -> readWorldServer(worldRegistryKey)
         );
     }
