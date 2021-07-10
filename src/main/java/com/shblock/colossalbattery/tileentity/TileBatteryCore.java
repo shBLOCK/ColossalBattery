@@ -8,7 +8,6 @@ import com.shblock.colossalbattery.material.BatteryMaterial;
 import lombok.experimental.Delegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -17,24 +16,16 @@ import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import org.cyclops.cyclopscore.helper.TileHelpers;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 import org.cyclops.integrateddynamics.capability.energystorage.IEnergyStorageCapacity;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
-//@Mod.EventBusSubscriber
 public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergyStorageCapacity, CyclopsTileEntity.ITickingTile {
     @Delegate
     private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
-
-    public static final HashSet<TileBatteryCore> collection = new HashSet<>();
 
     private static final AxisAlignedBB NONE = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
@@ -43,29 +34,13 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     private long capacity = 0;
     private int transfer_rate = 0;
 
-//    private boolean shouldSendStructureUpdate = false;
+    public int this_tick_receive_left = transfer_rate;
+    public int this_tick_extract_left = transfer_rate;
 
     public TileBatteryCore() {
         super(RegistryEntries.TILE_BATTERY_CORE);
         addCapabilityInternal(CapabilityEnergy.ENERGY, LazyOptional.of(() -> this));
-        collection.add(this);
     }
-
-    @Override
-    public void remove() {
-        super.remove();
-        collection.remove(this);
-    }
-
-//    @SubscribeEvent
-//    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-//        System.out.println(event);
-//        if (!event.getPlayer().world.isRemote()) {
-//            for (TileBatteryCore obj : collection) {
-//                obj.shouldSendStructureUpdate = true;
-//            }
-//        }
-//    }
 
     @Override
     public boolean isFormed() {
@@ -82,7 +57,6 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         this.transfer_rate = this.structure.getTransferRate();
         this.structure.construct(this.pos);
         markDirty();
-//        this.shouldSendStructureUpdate = true;
         sendUpdate();
         return true;
     }
@@ -95,7 +69,6 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
             this.structure = null;
             this.core_pos = null;
             markDirty();
-//            this.shouldSendStructureUpdate = true;
             sendUpdate();
         }
     }
@@ -193,34 +166,6 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         return tag;
     }
 
-//    @Override
-//    public SUpdateTileEntityPacket getUpdatePacket() {
-//        CompoundNBT tag = getUpdateTag();
-//        if (this.shouldSendStructureUpdate) {
-//            this.shouldSendStructureUpdate = false;
-//        }
-//        return new SUpdateTileEntityPacket(getPos(), 1, tag);
-//    }
-//
-//    @Override
-//    public CompoundNBT getUpdateTag() {
-//        CompoundNBT tag = super.getUpdateTag();
-//        if (!this.shouldSendStructureUpdate) {
-//            tag.put("structure", new CompoundNBT());
-//        }
-//        return tag;
-//    }
-
-//    @Override
-//    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-//        BatteryStructure old_structure = this.structure;
-//        super.handleUpdateTag(state, tag);
-//        if (!tag.contains("structure_changed")) {
-//            this.structure = old_structure;
-//        }
-//
-//    }
-
     public long getCapacity() {
         return this.capacity;
     }
@@ -261,32 +206,34 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
+        if (this.this_tick_receive_left <= 0) return 0;
         if (!isFormed()) {
             return 0;
         }
-//        int capacity_left = MathHelper.longToInt(this.capacity - this.energy);
         long capacity_left = this.capacity - this.energy;
-        long max_transfer = Math.min(maxReceive, this.transfer_rate);
+        long max_transfer = Math.min(maxReceive, this.this_tick_receive_left);
         long to_transfer = Math.min(capacity_left, max_transfer);
         int int_to_transfer = MathHelper.longToInt(to_transfer);
         if (!simulate) {
             setEnergy(this.energy + int_to_transfer);
+            this.this_tick_receive_left -= int_to_transfer;
         }
         return int_to_transfer;
     }
 
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
+        if (this.this_tick_extract_left <= 0) return 0;
         if (!isFormed()) {
             return 0;
         }
-//        int energy_left = MathHelper.longToInt(this.energy);
         long energy_left = this.energy;
-        long max_transfer = Math.min(maxExtract, this.transfer_rate);
+        long max_transfer = Math.min(maxExtract, this.this_tick_extract_left);
         long to_transfer = Math.min(energy_left, max_transfer);
         int int_to_transfer = MathHelper.longToInt(to_transfer);
         if (!simulate) {
             setEnergy(this.energy - int_to_transfer);
+            this.this_tick_extract_left -= int_to_transfer;
         }
         return int_to_transfer;
     }
@@ -313,6 +260,9 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     @Override
     public void tick() {
+        this.this_tick_receive_left = this.transfer_rate;
+        this.this_tick_extract_left = this.transfer_rate;
+
         this.tickingTileComponent.tick();
     }
 

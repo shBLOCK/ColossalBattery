@@ -107,7 +107,17 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
         for (Direction facing : Direction.values()) {
             IEnergyStorage energyStorage = EnergyHelpers.getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
             if (energyStorage != null) {
-                int energy = energyStorage.receiveEnergy(Math.min(core_tile.getTransferRate(), core_tile.getEnergyStored()), false);
+                if (energyStorage instanceof TileBatteryCore) {
+                    if (((TileBatteryCore) energyStorage).getPos().equals(this.core_pos)) {
+                        continue;
+                    }
+                }
+                if (energyStorage instanceof TileBatteryInterface) {
+                    if (((TileBatteryInterface) energyStorage).core_pos.equals(this.core_pos)) {
+                        continue;
+                    }
+                }
+                int energy = energyStorage.receiveEnergy(Math.min(core_tile.this_tick_extract_left, core_tile.getEnergyStored()), false);
                 core_tile.setEnergy(core_tile.getEnergy() - energy);
             }
         }
@@ -128,7 +138,7 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
                         continue;
                     }
                 }
-                int energy = energyStorage.extractEnergy(Math.min(core_tile.getTransferRate(), MathHelper.longToInt(core_tile.getCapacity() - core_tile.getEnergy())), false);
+                int energy = energyStorage.extractEnergy(Math.min(core_tile.this_tick_receive_left, MathHelper.longToInt(core_tile.getCapacity() - core_tile.getEnergy())), false);
                 core_tile.setEnergy(core_tile.getEnergy() + energy);
             }
         }
