@@ -1,0 +1,6 @@
+{
+  "parent": "colossal_battery:block/interface_formed",
+  "textures": {
+    "interface": "colossal_battery:block/interface_input"
+  }
+}

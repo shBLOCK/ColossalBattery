@@ -5,9 +5,6 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.shblock.colossalbattery.ColossalBattery;
 import mekanism.api.RelativeSide;
 import mekanism.client.model.MekanismJavaModel;
-import mekanism.client.render.MekanismRenderType;
-import mekanism.common.util.EnumUtils;
-import mekanism.common.util.MekanismUtils;
 import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -21,7 +18,7 @@ import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Set;
 
-//All copied from Mek's ModelEnergyCube class! (because some function have private access, I can't access them)
+//All copied from Mek's ModelEnergyCube class!
 @OnlyIn(Dist.CLIENT)
 public class MekRender extends MekanismJavaModel {
     private static final ResourceLocation CUBE_TEXTURE;
