@@ -14,12 +14,14 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.Level;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
@@ -74,6 +76,8 @@ public class RenderBattery6Face extends RenderBatteryBase {
 
     private static final HashMap<BatteryMaterial, ResourceLocation> TEXTURES_BATTERY = new HashMap<>();
     private static final HashMap<BatteryMaterial, ResourceLocation> ICONS_BATTERY = new HashMap<>();
+    private static final ResourceLocation NODES_TEXTURE = new ResourceLocation(ColossalBattery.MODID, "block/interface_nodes");
+    private static final HashMap<Direction, Quaternion> ROTATION_MAP = new HashMap<>();
     static {
         String start = "models/battery/";
         String end = "";
@@ -98,12 +102,27 @@ public class RenderBattery6Face extends RenderBatteryBase {
         ICONS_BATTERY.put(BatteryMaterials.OBSIDIAN, new ResourceLocation(ColossalBattery.MODID, start + "obsidian" + end));
         ICONS_BATTERY.put(BatteryMaterials.MENRIL, new ResourceLocation(ColossalBattery.MODID, start + "menril" + end));
         ICONS_BATTERY.put(BatteryMaterials.ULTIMATE, new ResourceLocation(ColossalBattery.MODID, start + "ultimate" + end));
+
+        ROTATION_MAP.put(Direction.DOWN, new Quaternion(180, 0, 0, true));
+        ROTATION_MAP.put(Direction.UP, new Quaternion(0, 0, 0, true));
+        ROTATION_MAP.put(Direction.NORTH, new Quaternion(-90, 0, 0, true));
+        ROTATION_MAP.put(Direction.SOUTH, new Quaternion(90, 0, 0, true));
+        ROTATION_MAP.put(Direction.WEST, new Quaternion(0, 0, 90, true));
+        ROTATION_MAP.put(Direction.EAST, new Quaternion(0, 0, -90, true));
     }
     private final ModelRenderer main_model;
+    private final ModelRenderer[] node_renders;
 
     public RenderBattery6Face() {
         this.main_model = new ModelRenderer(64, 64, 0, 0);
-        this.main_model.addBox(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 16.0F, 0.0F);
+        this.main_model.addBox(0.0F, 0.0F, 0.0F, 16.0F, 16.0F, 16.0F);
+        ArrayList<ModelRenderer> renders = new ArrayList<>();
+        for (int i=0;i<4;i++) {
+            ModelRenderer model = new ModelRenderer(32, 32, 0, i * 8);
+            model.addBox(-2.0F, 8F, -2.0F, 4.0F, 1.0F, 4.0F);
+            renders.add(model);
+        }
+        this.node_renders = renders.toArray(new ModelRenderer[4]);
     }
 
     public static void onPreTextureStitch(TextureStitchEvent.Pre event) {
@@ -111,14 +130,7 @@ public class RenderBattery6Face extends RenderBatteryBase {
             for (ResourceLocation value : TEXTURES_BATTERY.values()) {
                 event.addSprite(value);
             }
-        }
-    }
-
-    public static void onPostTextureStitch(TextureStitchEvent.Post event) {
-        if (event.getMap().getTextureLocation().equals(Atlases.CHEST_ATLAS)) {
-            for (ResourceLocation value : TEXTURES_BATTERY.values()) {
-                ColossalBattery.clog(Level.DEBUG, "Texture stitch successful: " + event.getMap().getSprite(value).toString());
-            }
+            event.addSprite(NODES_TEXTURE);
         }
     }
 
@@ -158,11 +170,32 @@ public class RenderBattery6Face extends RenderBatteryBase {
 
     @Override
     public void renderCore(Set<Direction> sides, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
-
+        RenderMaterial material = new RenderMaterial(Atlases.CHEST_ATLAS, NODES_TEXTURE);
+        IVertexBuilder vertexBuilder = material.getBuffer(buffer, RenderType::getEntityCutout);
+        for (Direction facing : sides) {
+            renderNode(facing, this.node_renders[3], partialTicks, matrixStack, buffer, vertexBuilder, combinedLight, combinedOverlay);
+        }
     }
 
     @Override
     public void renderInterface(Set<Direction> sides, EnumIOMode mode, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+        RenderMaterial material = new RenderMaterial(Atlases.CHEST_ATLAS, NODES_TEXTURE);
+        IVertexBuilder vertexBuilder = material.getBuffer(buffer, RenderType::getEntityCutout);
+        for (Direction facing : sides) {
+            renderNode(facing, this.node_renders[mode.getId()], partialTicks, matrixStack, buffer, vertexBuilder, combinedLight, combinedOverlay);
+        }
+    }
 
+    private void renderNode(Direction facing, ModelRenderer model, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, IVertexBuilder vertexBuilder, int combinedLight, int combinedOverlay) {
+        matrixStack.push();
+        matrixStack.translate(0.5F, 0.5F, 0.5F);
+        rotateToNodeFacing(matrixStack, facing);
+        model.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay);
+        matrixStack.pop();
+    }
+
+    private MatrixStack rotateToNodeFacing(MatrixStack matrixStack, Direction facing) {
+        matrixStack.rotate(ROTATION_MAP.get(facing));
+        return matrixStack;
     }
 }

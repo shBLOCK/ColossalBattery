@@ -4,17 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.shblock.colossalbattery.material.BatteryMaterials;
 import com.shblock.colossalbattery.tileentity.EnumIOMode;
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
-import mekanism.api.RelativeSide;
 import mekanism.client.MekanismClient;
 import mekanism.client.model.ModelEnergyCube;
 import mekanism.client.render.tileentity.RenderEnergyCube;
 import mekanism.common.tier.EnergyCubeTier;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.util.ColorHelper;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3f;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class RenderBatteryMek extends RenderBatteryBase {
@@ -79,39 +76,19 @@ public class RenderBatteryMek extends RenderBatteryBase {
     public void renderInterface(Set<Direction> sides, EnumIOMode mode, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
         matrixStack.push();
         matrixStack.translate(0.5D, -0.5D, 0.5D);
-        Set<RelativeSide> relativeSides = new HashSet<>();
-        for (Direction facing : sides) {
-            switch (facing) {
-                case UP:
-                    relativeSides.add(RelativeSide.BOTTOM);
-                    break;
-                case DOWN:
-                    relativeSides.add(RelativeSide.TOP);
-                    break;
-                case NORTH:
-                    relativeSides.add(RelativeSide.FRONT);
-                    break;
-                case SOUTH:
-                    relativeSides.add(RelativeSide.BACK);
-                    break;
-                case EAST:
-                    relativeSides.add(RelativeSide.RIGHT);
-                    break;
-                case WEST:
-                    relativeSides.add(RelativeSide.LEFT);
-                    break;
-            }
-        }
-        int light = combinedLight;
+        float[] port_color = null;
         switch (mode) {
+            case NORMAL:
+                port_color = new float[] {0.3F, 0.3F, 0.3F};
+                break;
             case INPUT:
-                light = ColorHelper.PackedColor.packColor(255, 50, 50, 255);
+                port_color = new float[] {0.0F, 0.658F, 0.952F};
                 break;
             case OUTPUT:
-                light = ColorHelper.PackedColor.packColor(255, 255, 255, 0);
+                port_color = new float[] {1.0F, 0.5F, 0.15F};
                 break;
         }
-        MEK_RENDER.renderSidesBatched(matrixStack, buffer, light, combinedOverlay, relativeSides, false);
+        MEK_RENDER.renderSidesBatched(matrixStack, buffer, combinedLight, combinedOverlay, sides, port_color);
         matrixStack.pop();
     }
 }

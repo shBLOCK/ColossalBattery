@@ -266,7 +266,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         }
 //        int capacity_left = MathHelper.longToInt(this.capacity - this.energy);
         long capacity_left = this.capacity - this.energy;
-        long max_transfer = Math.max(maxReceive, this.transfer_rate);
+        long max_transfer = Math.min(maxReceive, this.transfer_rate);
         long to_transfer = Math.min(capacity_left, max_transfer);
         int int_to_transfer = MathHelper.longToInt(to_transfer);
         if (!simulate) {
@@ -282,7 +282,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         }
 //        int energy_left = MathHelper.longToInt(this.energy);
         long energy_left = this.energy;
-        long max_transfer = Math.max(maxExtract, this.transfer_rate);
+        long max_transfer = Math.min(maxExtract, this.transfer_rate);
         long to_transfer = Math.min(energy_left, max_transfer);
         int int_to_transfer = MathHelper.longToInt(to_transfer);
         if (!simulate) {
@@ -318,6 +318,6 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     @Override
     protected int getUpdateBackoffTicks() {
-        return 5;
+        return 1;
     }
 }

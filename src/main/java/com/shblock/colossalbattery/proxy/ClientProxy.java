@@ -13,9 +13,7 @@ public class ClientProxy extends ClientProxyComponent {
         super(new CommonProxy());
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderBattery6Face::onPreTextureStitch);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderBattery6Face::onPostTextureStitch);
-
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(MekRender::onPreTextureStitch);
+//        FMLJavaModLoadingContext.get().getModEventBus().addListener(MekRender::onPreTextureStitch);
     }
 
     @Override

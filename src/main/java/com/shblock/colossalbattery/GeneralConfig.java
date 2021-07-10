@@ -20,7 +20,7 @@ public class GeneralConfig extends DummyConfig {
             minimalValue = 1,
             maximalValue = 10000
     )
-    public static int mek_divider = 10;
+    public static int mek_divider = 8;
 
     public GeneralConfig() {
         super(ColossalBattery._instance, "structure");
