@@ -1,10 +1,10 @@
 Description
 ==================
-Energy batteries, but multi block!
-This mod is inspired by [Colossal Chests](https://www.curseforge.com/minecraft/mc-mods/colossal-chests "Clossal Chests") mod.
-This mod's textures are very bad, so feel free to make a PR on github!
+Energy batteries, but multi block!  
 This mod requires the [Cyclops Core](https://www.curseforge.com/minecraft/mc-mods/cyclops-core "Cyclops Core") library!      
-Check out [Wiki](https://github.com/shBLOCK/ColossalBattery/wiki "Wiki") for detail information!   
+This mod is inspired by [Colossal Chests](https://www.curseforge.com/minecraft/mc-mods/colossal-chests "Clossal Chests") mod.  
+This mod's textures are very bad, so feel free to make a PR on github!  
+Check out [Wiki](https://github.com/shBLOCK/ColossalBattery/wiki "Wiki") for detail information!    
 
 Images
 ==================
