@@ -43,5 +43,9 @@
   "material.diamond": "§b钻石",
   "material.obsidian": "§b黑曜石",
   "material.menril": "§b门瑞欧",
-  "material.ultimate": "§b终极"
+  "material.ultimate": "§b终极",
+  "material.mek_basic": "§b通用机械 基础",
+  "material.mek_advanced": "§b通用机械 高级",
+  "material.mek_elite": "§b通用机械 精英",
+  "material.mek_ultimate": "§b通用机械 终极"
 }

@@ -43,5 +43,9 @@
   "material.diamond": "§bDiamond",
   "material.obsidian": "§bObsidian",
   "material.menril": "§bMenril",
-  "material.ultimate": "§bUltimate"
+  "material.ultimate": "§bUltimate",
+  "material.mek_basic": "§bMek Basic",
+  "material.mek_advanced": "§bMek Advanced",
+  "material.mek_elite": "§bMek Elite",
+  "material.mek_ultimate": "§bMek Ultimate"
 }
