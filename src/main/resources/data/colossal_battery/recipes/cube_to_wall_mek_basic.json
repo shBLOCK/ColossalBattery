@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "GCG",
+    "GGG"
+  ],
+  "key": {
+    "G": {"tag": "forge:cobblestone"},
+    "C": {"item": "mekanism:basic_energy_cube"}
+  },
+  "result": {
+    "item": "colossal_battery:battery_wall_mek_basic",
+    "count": 8
+  }
+}

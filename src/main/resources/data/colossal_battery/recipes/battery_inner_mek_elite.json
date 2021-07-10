@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "colossal_battery:battery_inner_material_mek_advanced"},
+    {"item": "colossal_battery:battery_inner_material_mek_advanced"},
+    {"item": "colossal_battery:battery_inner_material_mek_advanced"},
+    {"item": "colossal_battery:battery_inner_material_mek_advanced"},
+    {"tag": "forge:alloys/elite"},
+    {"item": "mekanism:energy_tablet"},
+	{"tag": "forge:alloys/elite"},
+	{"tag": "forge:ingots/gold"}
+  ],
+  "result": {
+    "item": "colossal_battery:battery_inner_material_mek_elite",
+    "count": 4
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "colossal_battery:battery_inner_material_mek_elite"
+        }
+      ]
+    }
+  ]
+}

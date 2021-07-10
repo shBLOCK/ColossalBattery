@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "GCG",
+    "GGG"
+  ],
+  "key": {
+    "G": {"tag": "forge:glass"},
+    "C": {"item": "mekanism:ultimate_energy_cube"}
+  },
+  "result": {
+    "item": "colossal_battery:battery_inner_material_mek_ultimate",
+    "count": 8
+  }
+}

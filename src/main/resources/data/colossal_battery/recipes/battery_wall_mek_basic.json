@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "mekanism:steel_casing"},
+    {"item": "mekanism:steel_casing"},
+    {"item": "mekanism:steel_casing"},
+    {"item": "mekanism:steel_casing"},
+    {"tag": "forge:dusts/redstone"},
+    {"item": "mekanism:energy_tablet"},
+	{"tag": "forge:dusts/redstone"},
+	{"tag": "forge:ingots/iron"}
+  ],
+  "result": {
+    "item": "colossal_battery:battery_wall_mek_basic",
+    "count": 4
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "colossal_battery:block/battery_inner_material_mek_advanced" }
+  }
+}
