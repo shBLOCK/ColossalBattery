@@ -1,6 +1,6 @@
-package com.shblock.colossalbattery.block;
+package com.shblock.colossalbattery.block.materials;
 
-public enum EnumInnerBlockType {
+public enum EnumInnerTierBlockType {
     BASIC("basic", 1),
     ADVANCED("advanced", 2),
     ULTIMATE("ultimate", 10);
@@ -8,7 +8,7 @@ public enum EnumInnerBlockType {
     private final String material_name;
     private final int tier;
 
-    EnumInnerBlockType(String material_name, int tier) {
+    EnumInnerTierBlockType(String material_name, int tier) {
         this.material_name = material_name;
         this.tier = tier;
     }

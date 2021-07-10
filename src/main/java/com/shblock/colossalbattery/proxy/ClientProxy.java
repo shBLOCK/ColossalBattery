@@ -1,6 +1,7 @@
 package com.shblock.colossalbattery.proxy;
 
 import com.shblock.colossalbattery.ColossalBattery;
+import com.shblock.colossalbattery.client.render.battery.MekRender;
 import com.shblock.colossalbattery.client.render.battery.RenderBattery6Face;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -13,6 +14,8 @@ public class ClientProxy extends ClientProxyComponent {
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderBattery6Face::onPreTextureStitch);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(RenderBattery6Face::onPostTextureStitch);
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(MekRender::onPreTextureStitch);
     }
 
     @Override

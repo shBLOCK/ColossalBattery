@@ -5,11 +5,17 @@ import com.shblock.colossalbattery.material.BatteryMaterials;
 import com.shblock.colossalbattery.tileentity.TileMultiBlockDummy;
 import com.shblock.colossalbattery.tileentity.TileMultiBlockPartBase;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
+import net.minecraftforge.common.util.Constants;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BatteryStructure extends CubeStructure {
     public final BatteryMaterial material;
@@ -19,10 +25,16 @@ public class BatteryStructure extends CubeStructure {
     private int[] structure_size_cache;
     private int[] render_offset_cache;
     private AxisAlignedBB render_bounding_box_cache;
+    public HashSet<BlockPos> interface_list = new HashSet<>();
 
     public BatteryStructure(CubeStructure cubeStructure, BatteryMaterial material) {
         super(cubeStructure.world, cubeStructure.min_pos, cubeStructure.max_pos);
         this.material = material;
+//        cubeStructure.forEach(pos -> {
+//            if (material.interface_validator.test(cubeStructure.world.getBlockState(pos).getBlock())) {
+//                interface_list.add(pos);
+//            }
+//        });
     }
 
     public int getMaterialBlockCount() {
@@ -101,6 +113,11 @@ public class BatteryStructure extends CubeStructure {
         tag.putString("type", this.material.name);
         tag.putInt("material_block_count", this.material_block_count);
         tag.put("core_pos", NBTUtil.writeBlockPos(core_pos));
+        ListNBT list = new ListNBT();
+        for (BlockPos pos : this.interface_list) {
+            list.add(NBTUtil.writeBlockPos(pos));
+        }
+        tag.put("interface_list", list);
         return tag;
     }
 
@@ -109,6 +126,11 @@ public class BatteryStructure extends CubeStructure {
         structure.material_block_count = tag.getInt("material_block_count");
         structure.core_pos = NBTUtil.readBlockPos(tag.getCompound("core_pos"));
         structure.initCache();
+        structure.interface_list.clear();
+        ListNBT list = tag.getList("interface_list", Constants.NBT.TAG_COMPOUND);
+        for (INBT nbt : list) {
+            structure.interface_list.add(NBTUtil.readBlockPos((CompoundNBT) nbt));
+        }
         return structure;
     }
 }

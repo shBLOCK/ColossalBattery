@@ -1,6 +1,7 @@
 {
   "itemGroup.colossal_battery": "Colossal Battery",
 
+  "block.colossal_battery.multi_block_dummy": "Multi Block Structure",
   "block.colossal_battery.battery_core": "Battery Core",
   "block.colossal_battery.battery_interface": "Battery Interface",
   "block.colossal_battery.battery_inner_basic": "Basic Battery Filler",
@@ -15,9 +16,12 @@
   "block.colossal_battery.battery_wall_ultimate": "Ultimate Battery Wall",
 
   "message.colossal_battery.success": "§aStructure construct successful!",
+  "message.colossal_battery.error.no_structure": "§cStructure construct attempt failed: didn't found any structure, material:",
   "message.colossal_battery.error.too_much_block": "§aStructure construct attempt failed: this structure have too many valid blocks (check if this structure is connected to lots of valid blocks), material:",
   "message.colossal_battery.error.too_small": "§cStructure construct attempt failed: structure too small, material:",
   "message.colossal_battery.error.too_big": "§cStructure construct attempt failed: structure too big (max length of this structure §b%d§c is longer then the max length §b%d§c), material:",
+  "message.colossal_battery.error.block_not_allowed_here": "§cStructure construct attempt failed: the block at position: §b%s§c is not allowed here, material:",
+  "message.colossal_battery.error.frame_block_invalid": "§cStructure construct attempt failed: frame block invalid (position: §b%s§c), material:",
   "message.colossal_battery.error.outline_block_invalid": "§cStructure construct attempt failed: wall block invalid (position: §b%s§c), material:",
   "message.colossal_battery.error.inner_block_invalid": "§cStructure construct attempt failed: filler block invalid (position: §b%s§c), material:",
   "message.colossal_battery.error.multiple_core_block": "§cStructure construct attempt failed: found multiple core blocks (the position of one of them: §b%s§c), material:",

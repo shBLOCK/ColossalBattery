@@ -1,6 +1,7 @@
 package com.shblock.colossalbattery;
 
 import com.shblock.colossalbattery.block.*;
+import com.shblock.colossalbattery.block.materials.*;
 import com.shblock.colossalbattery.tileentity.TileBatteryCoreConfig;
 import com.shblock.colossalbattery.tileentity.TileBatteryInterfaceConfig;
 import com.shblock.colossalbattery.tileentity.TileMultiBlockDummyConfig;
@@ -12,11 +13,14 @@ public class Configs {
         configHandler.addConfigurable(new BlockBatteryCoreConfig());
         configHandler.addConfigurable(new BlockBatteryInterfaceConfig());
         configHandler.addConfigurable(new BlockMultiBlockDummyConfig());
-        for (EnumInnerBlockType type : EnumInnerBlockType.values()) {
-            configHandler.addConfigurable(new BlockInnerMaterialConfig(type));
+        for (EnumInnerTierBlockType type : EnumInnerTierBlockType.values()) {
+            configHandler.addConfigurable(new BlockInnerTierMaterialConfig(type));
         }
         for (EnumBatteryWallType type : EnumBatteryWallType.values()) {
             configHandler.addConfigurable(new BlockBatteryWallConfig(type));
+        }
+        for (EnumInnerMaterialType type : EnumInnerMaterialType.values()) {
+            configHandler.addConfigurable(new BlockInnerMaterialConfig(type));
         }
 
         //TileEntities

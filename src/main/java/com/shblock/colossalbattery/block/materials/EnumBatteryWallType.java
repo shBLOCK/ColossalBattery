@@ -1,4 +1,4 @@
-package com.shblock.colossalbattery.block;
+package com.shblock.colossalbattery.block.materials;
 
 public enum EnumBatteryWallType {
     COPPER("copper"),
@@ -7,7 +7,11 @@ public enum EnumBatteryWallType {
     GOLD("gold"),
     DIAMOND("diamond"),
     OBSIDIAN("obsidian"),
-    ULTIMATE("ultimate");
+    ULTIMATE("ultimate"),
+    MEK_BASIC("mek_basic"),
+    MEK_ADVANCED("mek_advanced"),
+    MEK_ELITE("mek_elite"),
+    MEK_ULTIMATE("mek_ultimate");
 
     private final String material_name;
 

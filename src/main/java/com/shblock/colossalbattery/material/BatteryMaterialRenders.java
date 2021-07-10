@@ -2,8 +2,10 @@ package com.shblock.colossalbattery.material;
 
 import com.shblock.colossalbattery.client.render.battery.RenderBattery6Face;
 import com.shblock.colossalbattery.client.render.battery.RenderBatteryBase;
+import com.shblock.colossalbattery.client.render.battery.RenderBatteryMek;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.ModList;
 import org.cyclops.cyclopscore.helper.MinecraftHelpers;
 
 import java.util.HashMap;
@@ -23,6 +25,12 @@ public class BatteryMaterialRenders {
         RENDERS.put(BatteryMaterials.OBSIDIAN, RenderBattery6Face._instance);
         RENDERS.put(BatteryMaterials.MENRIL, RenderBattery6Face._instance);
         RENDERS.put(BatteryMaterials.ULTIMATE, RenderBattery6Face._instance);
+        if (ModList.get().isLoaded("mekanism")) {
+            RENDERS.put(BatteryMaterials.MEK_BASIC, RenderBatteryMek._instance);
+            RENDERS.put(BatteryMaterials.MEK_ADVANCED, RenderBatteryMek._instance);
+            RENDERS.put(BatteryMaterials.MEK_ELITE, RenderBatteryMek._instance);
+            RENDERS.put(BatteryMaterials.MEK_ULTIMATE, RenderBatteryMek._instance);
+        }
     }
 
     static {

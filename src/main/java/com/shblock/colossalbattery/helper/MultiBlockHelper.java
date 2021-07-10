@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.TriPredicate;
 import org.apache.logging.log4j.Level;
 import org.cyclops.cyclopscore.helper.BlockHelpers;
 import org.cyclops.cyclopscore.helper.TileHelpers;
@@ -22,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,7 +45,7 @@ public class MultiBlockHelper {
         if (validator.test(block)) {
             founded_set.add(pos);
         }
-        if (validator_connect.test(block)) {
+        if (validator_connect.or(validator).test(block)) {
             set.add(pos);
             for (Direction direction : Direction.values()) {
                 BlockPos offset_pos = pos.offset(direction);
@@ -211,23 +213,30 @@ public class MultiBlockHelper {
      * Try find a cube structure with valid outline and inner blocks from a starting pos.
      * @param world World in.
      * @param pos Starting pos.
+     * @param validator_frame The block validator for frame block.
      * @param validator_outline The block validator for outline block.
      * @param validator_inner The block validator for core block.
      * @param validator_must_single Block that's not allowed to have multiple in the structure.
+     * @param block_checker Is this block allowed here
+     * @param material_name The structure material name (for generate error message)
      * @return The CubeStructure object, or null if didn't found any structure.
      */
-    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_frame, Predicate<Block> validator_outline, Predicate<Block> validator_inner, Predicate<Block> validator_must_single, TranslationTextComponent material_name) {
-        HashSet<BlockPos> outline_set;
+    public static CubeStructure validateBoxStructureWithCore(World world, BlockPos pos, Predicate<Block> validator_frame, Predicate<Block> validator_outline, Predicate<Block> validator_inner, Predicate<Block> validator_must_single, TriPredicate<CubeStructure, BlockPos, Block> block_checker, TranslationTextComponent material_name) {
+        HashSet<BlockPos> frame_set;
         try {
-            outline_set = scanConnectedBlocks(world, pos, validator_outline.or(validator_frame));
+            frame_set = scanConnectedBlocks(world, pos, validator_frame);
         } catch (StackOverflowError ignored) {
             error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_much_block").append(material_name));
             ColossalBattery.clog(Level.WARN, "A structure have too much connected blocks caused StackOverflowError, the structure can't be validated, world: " + world + " , starting pos: " + pos);
             return null;
         }
-        BlockPos min_pos = findMinCorner(outline_set);
-        BlockPos max_pos = findMaxCorner(outline_set);
-        if (getMinSize(min_pos, max_pos) < 1) {
+        if (frame_set.isEmpty()) {
+            error_list.add(new TranslationTextComponent("message.colossal_battery.error.no_structure").append(material_name));
+            return null;
+        }
+        BlockPos min_pos = findMinCorner(frame_set);
+        BlockPos max_pos = findMaxCorner(frame_set);
+        if (getMinSize(min_pos, max_pos) < 2) {
             error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_small").append(material_name));
             return null;
         }
@@ -241,6 +250,10 @@ public class MultiBlockHelper {
                 for (int z = min_pos.getZ(); z <= max_pos.getZ(); z++) {
                     BlockPos check_pos = new BlockPos(x, y, z);
                     Block block = world.getBlockState(check_pos).getBlock();
+                    if (!block_checker.test(new CubeStructure(world, min_pos, max_pos), check_pos, block)) {
+                        error_list.add(new TranslationTextComponent("message.colossal_battery.error.block_not_allowed_here", check_pos.toString()).append(material_name));
+                        return null;
+                    }
                     if (isFrame(min_pos, max_pos, check_pos)) {
                         if (!validator_frame.test(block)) {
                             error_list.add(new TranslationTextComponent("message.colossal_battery.error.frame_block_invalid", check_pos.toString()).append(material_name));
@@ -340,12 +353,15 @@ public class MultiBlockHelper {
             CubeStructure result = validateBoxStructureWithCore(
                     world,
                     pos,
+                    material.frame_validator
+                            .or(material.core_validator)
+                            .or(material.interface_validator),
                     material.outline_validator
                             .or(material.core_validator)
                             .or(material.interface_validator),
-                    material.frame_validator,
                     material.inner_validator,
                     material.core_validator,
+                    material.block_checker,
                     material_name
             );
             if (result != null) {
@@ -353,9 +369,12 @@ public class MultiBlockHelper {
                     sendAllErrorMessage(player);
                     return null;
                 }
-                return new BatteryStructure(result, material);
+                BatteryStructure batteryStructure = new BatteryStructure(result, material);
+                batteryStructure.interface_list = findBlockMultiple(world, pos, material.frame_validator.or(material.core_validator), material.interface_validator);
+                return batteryStructure;
             }
         }
+        sendAllErrorMessage(player);
         return null;
     }
 }

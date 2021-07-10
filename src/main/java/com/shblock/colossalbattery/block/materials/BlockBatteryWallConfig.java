@@ -1,4 +1,4 @@
-package com.shblock.colossalbattery.block;
+package com.shblock.colossalbattery.block.materials;
 
 import com.shblock.colossalbattery.ColossalBattery;
 import org.cyclops.cyclopscore.config.extendedconfig.BlockConfig;

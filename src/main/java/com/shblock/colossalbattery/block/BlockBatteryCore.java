@@ -2,7 +2,6 @@ package com.shblock.colossalbattery.block;
 
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -11,7 +10,6 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
@@ -47,10 +45,5 @@ public class BlockBatteryCore extends BlockMultiBlockPartBase {
             }
         }
         return super.onBlockActivated(state, world, pos, player, hand, hit);
-    }
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
     }
 }

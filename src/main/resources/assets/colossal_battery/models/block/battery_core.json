@@ -1,6 +1,6 @@
 {
-  "parent": "colossal_battery:block/interface",
+  "parent": "block/cube_all",
   "textures": {
-    "interface": "colossal_battery:block/battery_core"
+    "all": "colossal_battery:block/battery_core"
   }
 }

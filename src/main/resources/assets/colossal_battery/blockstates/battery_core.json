@@ -1,6 +1,6 @@
 {
   "variants": {
     "formed=false": { "model": "colossal_battery:block/battery_core" },
-    "formed=true": { "model": "colossal_battery:block/battery_core_formed" }
+    "formed=true": {"model": "colossal_battery:block/empty"}
   }
 }

@@ -4,6 +4,7 @@ import com.shblock.colossalbattery.RegistryEntries;
 import com.shblock.colossalbattery.block.BlockBatteryInterface;
 import com.shblock.colossalbattery.helper.MathHelper;
 import lombok.experimental.Delegate;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -17,9 +18,34 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
     @Delegate
     private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
 
+    private EnumIOMode mode = EnumIOMode.NORMAL;
+
     public TileBatteryInterface() {
         super(RegistryEntries.TILE_BATTERY_INTERFACE);
         addCapabilityInternal(CapabilityEnergy.ENERGY, LazyOptional.of(() -> this));
+    }
+
+    public EnumIOMode getMode() {
+        return this.mode;
+    }
+
+    public void changeMode() {
+        this.mode = this.mode.getNext();
+        markDirty();
+        sendUpdate();
+    }
+
+    @Override
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        this.mode = EnumIOMode.getById(tag.getInt("mode"));
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        tag = super.write(tag);
+        tag.putInt("mode", this.mode.getId());
+        return tag;
     }
 
     @Override
@@ -112,7 +138,7 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
     public void tick() {
         if (!this.world.isRemote()) {
             if (isFormed()) {
-                switch (getBlockState().get(BlockBatteryInterface.MODE)) {
+                switch (this.mode) {
                     case NORMAL:
                         break;
                     case INPUT:

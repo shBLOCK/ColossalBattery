@@ -1,6 +1,9 @@
 package com.shblock.colossalbattery.material;
 
+import com.shblock.colossalbattery.helper.CubeStructure;
 import net.minecraft.block.Block;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.TriPredicate;
 
 import java.util.function.Predicate;
 
@@ -13,6 +16,7 @@ public class BatteryMaterial {
     public final Predicate<Block> inner_validator;
     public final Predicate<Block> core_validator;
     public final Predicate<Block> interface_validator;
+    public TriPredicate<CubeStructure, BlockPos, Block> block_checker = (structure, pos, block) -> true;
     private final boolean explosion_resistance;
 
     public BatteryMaterial(String name, long capacity_pre_block, int transfer_rate_pre_block, Predicate<Block> outline_validator, Predicate<Block> inner_validator, Predicate<Block> core_validator, Predicate<Block> interface_validator, boolean explosion_resistance) {
@@ -31,7 +35,12 @@ public class BatteryMaterial {
         this.explosion_resistance = explosion_resistance;
     }
 
-    public boolean isExplosionResistance() {
+    public BatteryMaterial(String name, long capacity_pre_block, int transfer_rate_pre_block, Predicate<Block> frame_validator, Predicate<Block> outline_validator, Predicate<Block> inner_validator, Predicate<Block> core_validator, Predicate<Block> interface_validator, TriPredicate<CubeStructure, BlockPos, Block> block_checker, boolean explosion_resistance) {
+        this(name, capacity_pre_block, transfer_rate_pre_block, frame_validator, outline_validator, inner_validator, core_validator, interface_validator, explosion_resistance);
+        this.block_checker = block_checker;
+    }
+
+        public boolean isExplosionResistance() {
         return this.explosion_resistance;
     }
 

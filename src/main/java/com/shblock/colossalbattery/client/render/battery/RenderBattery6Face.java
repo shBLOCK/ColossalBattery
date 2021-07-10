@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.shblock.colossalbattery.ColossalBattery;
 import com.shblock.colossalbattery.material.BatteryMaterial;
 import com.shblock.colossalbattery.material.BatteryMaterials;
+import com.shblock.colossalbattery.tileentity.EnumIOMode;
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.ModelRenderer;
@@ -21,6 +22,7 @@ import org.apache.logging.log4j.Level;
 
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderBattery6Face extends RenderBatteryBase {
@@ -132,7 +134,7 @@ public class RenderBattery6Face extends RenderBatteryBase {
 
     private void renderEnergyBar(TileBatteryCore tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
         if(tile.getEnergy() > 0) {
-            float height = (float) tile.getEnergy() / tile.getCapacity();
+            float height = tile.getEnergyPercentage();
             height = (height * 12 / 16) + 0.125F;
 
             for(Direction side : Direction.Plane.HORIZONTAL) {
@@ -152,5 +154,15 @@ public class RenderBattery6Face extends RenderBatteryBase {
                 vb.pos(matrix, c[3][0], c[3][1] * height, c[3][2]).color(1.0F, 1.0F, 1.0F, 1.0F).tex(maxU, maxV).lightmap(LightTexture.packLight(15, 15)).endVertex();
             }
         }
+    }
+
+    @Override
+    public void renderCore(Set<Direction> sides, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+
+    }
+
+    @Override
+    public void renderInterface(Set<Direction> sides, EnumIOMode mode, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+
     }
 }

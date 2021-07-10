@@ -1,13 +1,13 @@
-package com.shblock.colossalbattery.block;
+package com.shblock.colossalbattery.block.materials;
 
 import com.shblock.colossalbattery.ColossalBattery;
 import org.cyclops.cyclopscore.config.extendedconfig.BlockConfig;
 
 public class BlockInnerMaterialConfig extends BlockConfig {
-    public BlockInnerMaterialConfig(EnumInnerBlockType type) {
+    public BlockInnerMaterialConfig(EnumInnerMaterialType type) {
         super(
                 ColossalBattery._instance,
-                "battery_inner_" + type.getName(),
+                "battery_inner_material_" + type.getName(),
                 eConfig -> new BlockInnerMaterial(type),
                 getDefaultItemConstructor(ColossalBattery._instance)
         );

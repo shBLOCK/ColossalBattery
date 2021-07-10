@@ -182,11 +182,11 @@ dependencies {
     compileOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api")
     runtimeOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}")
 
-    compileOnly "mekanism:Mekanism:${mekanism_version}:api"
-    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")// core
-    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:additions")// Mekanism: Additions
-    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:generators")// Mekanism: Generators
-    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:tools")// Mekanism: Tools
+    compile fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
+    compile fg.deobf("mekanism:Mekanism:${mekanism_version}")// core
+    compile fg.deobf("mekanism:Mekanism:${mekanism_version}:additions")// Mekanism: Additions
+    compile fg.deobf("mekanism:Mekanism:${mekanism_version}:generators")// Mekanism: Generators
+    compile fg.deobf("mekanism:Mekanism:${mekanism_version}:tools")// Mekanism: Tools
 
 //    compile "mcjty.theoneprobe:TheOneProbe-1.16:1.16-3.1.4-22"
     compileOnly "org.projectlombok:lombok:1.16.4"
