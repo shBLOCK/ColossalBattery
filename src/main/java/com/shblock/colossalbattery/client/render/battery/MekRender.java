@@ -3,6 +3,7 @@ package com.shblock.colossalbattery.client.render.battery;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.shblock.colossalbattery.ColossalBattery;
+import mekanism.common.util.MekanismUtils;
 import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -13,7 +14,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.TextureStitchEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -29,7 +29,8 @@ public class MekRender extends Model {
     private final ModelRenderer[] ports;
 
     static {
-        CUBE_TEXTURE = new ResourceLocation(ColossalBattery.MODID, "textures/models/mek/energy_cube.png");
+//        CUBE_TEXTURE = new ResourceLocation(ColossalBattery.MODID, "textures/models/mek/energy_cube.png");
+        CUBE_TEXTURE = MekanismUtils.getResource(MekanismUtils.ResourceType.RENDER, "energy_cube.png");
         PORT_TEXTURE = new ResourceLocation(ColossalBattery.MODID, "textures/models/mek/energy_cube_overlay.png");
     }
 
