@@ -39,7 +39,7 @@ public class BatteryStructure extends CubeStructure {
 
     public int getMaterialBlockCount() {
         if (this.material_block_count == 0) {
-            this.material_block_count = getValidBlockCount(material.outline_validator.or(material.inner_validator));
+            this.material_block_count = getValidBlockCount(material.frame_validator.or(material.outline_validator).or(material.inner_validator));
         }
         return this.material_block_count;
     }
