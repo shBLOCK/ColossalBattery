@@ -260,10 +260,14 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     @Override
     public void tick() {
+        this.tickingTileComponent.tick();
+    }
+
+    @Override
+    protected void updateTileEntity() {
+        super.updateTileEntity();
         this.this_tick_receive_left = this.transfer_rate;
         this.this_tick_extract_left = this.transfer_rate;
-
-        this.tickingTileComponent.tick();
     }
 
     @Override
