@@ -206,10 +206,9 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
+        if (!isFormed()) return 0;
+        if (this.transfer_rate == Integer.MAX_VALUE) this.this_tick_receive_left = this.transfer_rate;
         if (this.this_tick_receive_left <= 0) return 0;
-        if (!isFormed()) {
-            return 0;
-        }
         long capacity_left = this.capacity - this.energy;
         long max_transfer = Math.min(maxReceive, this.this_tick_receive_left);
         long to_transfer = Math.min(capacity_left, max_transfer);
@@ -223,10 +222,9 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
 
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
+        if (!isFormed()) return 0;
+        if (this.transfer_rate == Integer.MAX_VALUE) this.this_tick_extract_left = this.transfer_rate;
         if (this.this_tick_extract_left <= 0) return 0;
-        if (!isFormed()) {
-            return 0;
-        }
         long energy_left = this.energy;
         long max_transfer = Math.min(maxExtract, this.this_tick_extract_left);
         long to_transfer = Math.min(energy_left, max_transfer);
