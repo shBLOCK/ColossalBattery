@@ -74,7 +74,7 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
     }
 
     public void onStructureRightClick(BlockPos click_pos, PlayerEntity player) {
-        player.sendStatusMessage(new StringTextComponent(Long.toString(this.energy) + "/" + Long.toString(this.capacity)), true);
+        player.sendStatusMessage(new StringTextComponent(MathHelper.formatLong(this.energy) + "FE/" + MathHelper.formatLong(this.capacity) + "FE (" + MathHelper.formatInt(this.transfer_rate) + "FE/t)"), true);
     }
 
     @Override
