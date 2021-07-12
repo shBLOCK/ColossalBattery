@@ -15,14 +15,25 @@ public class GeneralConfig extends DummyConfig {
 
     @ConfigurableProperty(
             category = "structure",
-            comment = "The divider of mek battery type's per block storage and transfer rate from mek's energy cube's.",
+            comment = "The divider of mek battery type's per block storage and transfer rate from mek's energy cube's. (default = 8)",
             configLocation = ModConfig.Type.SERVER,
             minimalValue = 1,
             maximalValue = 10000
     )
     public static int mek_divider = 8;
 
+    @ConfigurableProperty(
+            category = "render",
+            comment = "How many \"Energy Core\" to render in a colossal mek energy cube. (default = 1)",
+            configLocation = ModConfig.Type.COMMON,
+            minimalValue = 1,
+            maximalValue = 1024,
+            requiresWorldRestart = true,
+            requiresMcRestart = true
+    )
+    public static int mek_core_render_count = 1;
+
     public GeneralConfig() {
-        super(ColossalBattery._instance, "structure");
+        super(ColossalBattery._instance, "general");
     }
 }

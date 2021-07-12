@@ -11,7 +11,7 @@ modId="colossal_battery"
 version="${file.jarVersion}"
 displayName="ColossalBattery"
 description='''
-.
+Energy batteries, but multi block!
 '''
 [[dependencies.colossal_battery]]
     modId="forge"

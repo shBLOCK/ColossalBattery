@@ -1,6 +1,8 @@
 package com.shblock.colossalbattery.client.render.battery;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.shblock.colossalbattery.GeneralConfig;
 import com.shblock.colossalbattery.material.BatteryMaterials;
 import com.shblock.colossalbattery.tileentity.EnumIOMode;
 import com.shblock.colossalbattery.tileentity.TileBatteryCore;
@@ -10,9 +12,15 @@ import mekanism.client.render.tileentity.RenderEnergyCube;
 import mekanism.common.tier.EnergyCubeTier;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.gen.PerlinNoiseGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 public class RenderBatteryMek extends RenderBatteryBase {
     public static final RenderBatteryMek _instance = new RenderBatteryMek();
@@ -20,7 +28,14 @@ public class RenderBatteryMek extends RenderBatteryBase {
     public static final ModelEnergyCube ENERGY_CUBE_RENDER = new ModelEnergyCube();
     public static final ModelEnergyCube.ModelEnergyCore CORE_RENDER = new ModelEnergyCube.ModelEnergyCore();
     public static final MekRender MEK_RENDER = new MekRender();
-    public static final int CORE_RENDER_COUNT = 8;
+    public static final List<PerlinNoiseGenerator> NOISE_LIST = new ArrayList<>();
+
+    static {
+        Random random = new Random();
+        for (int i = 0; i < GeneralConfig.mek_core_render_count*3; i++) {
+            NOISE_LIST.add(new PerlinNoiseGenerator(new SharedSeedRandom(random.nextLong()), ImmutableList.of(0)));
+        }
+    }
 
     private EnergyCubeTier getCubeTier(TileBatteryCore tile) {
         if (tile.getMaterial() == BatteryMaterials.MEK_BASIC) {
@@ -46,7 +61,7 @@ public class RenderBatteryMek extends RenderBatteryBase {
         matrixStack.pop();
 
         if (tileEntity.getEnergy() != 0) {
-            for (int i = 0;i < CORE_RENDER_COUNT;i++) {
+            for (int i = 0;i < GeneralConfig.mek_core_render_count;i++) {
                 matrixStack.push();
                 float energy_percentage = tileEntity.getEnergyPercentage();
                 matrixStack.translate(-energy_percentage / 2, -energy_percentage / 2, -energy_percentage / 2);
@@ -54,17 +69,20 @@ public class RenderBatteryMek extends RenderBatteryBase {
                 matrixStack.scale(energy_percentage, energy_percentage, energy_percentage);
                 matrixStack.push();
                 matrixStack.translate(0.5D, 0.5D, 0.5D);
-                float ticks = (float) MekanismClient.ticksPassed + partialTicks + i * (36F / CORE_RENDER_COUNT);
                 matrixStack.scale(0.4F, 0.4F, 0.4F);
-                matrixStack.translate(0.0D, Math.sin(Math.toRadians(3.0F * ticks)) / 7.0D, 0.0D);
-                float scaledTicks = 4.0F * ticks;
-                matrixStack.rotate(Vector3f.YP.rotationDegrees(scaledTicks));
-                matrixStack.rotate(RenderEnergyCube.coreVec.rotationDegrees(36.0F + scaledTicks));
+                rotateByNoise(matrixStack, NOISE_LIST.subList(i * 3, i * 3 + 3), partialTicks);
                 CORE_RENDER.render(matrixStack, buffer, combinedLight, combinedOverlay, getCubeTier(tileEntity).getBaseTier().getColor(), 1.0F);
                 matrixStack.pop();
                 matrixStack.pop();
             }
         }
+    }
+
+    private void rotateByNoise(MatrixStack matrixStack, List<PerlinNoiseGenerator> noise_list, float partialTicks) {
+        float tick = MekanismClient.ticksPassed + partialTicks;
+        matrixStack.rotate(Vector3f.XP.rotation((float) (noise_list.get(0).noiseAt(tick / 100D, 0, false) * 3)));
+        matrixStack.rotate(Vector3f.YP.rotation((float) (noise_list.get(1).noiseAt(tick / 100D, 0, false) * 3)));
+        matrixStack.rotate(Vector3f.ZP.rotation((float) (noise_list.get(2).noiseAt(tick / 100D, 0, false) * 3)));
     }
 
     @Override
