@@ -240,7 +240,7 @@ public class MultiBlockHelper {
             error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_small").append(material_name));
             return null;
         }
-        if (getMaxSize(min_pos, max_pos) >= GeneralConfig.max_size) {
+        if (getMaxSize(min_pos, max_pos) > GeneralConfig.max_size) {
             error_list.add(new TranslationTextComponent("message.colossal_battery.error.too_big", getMaxSize(min_pos, max_pos), GeneralConfig.max_size).append(material_name));
             return null;
         }

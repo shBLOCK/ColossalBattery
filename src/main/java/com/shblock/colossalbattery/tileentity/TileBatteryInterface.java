@@ -1,7 +1,6 @@
 package com.shblock.colossalbattery.tileentity;
 
 import com.shblock.colossalbattery.RegistryEntries;
-import com.shblock.colossalbattery.block.BlockBatteryInterface;
 import com.shblock.colossalbattery.helper.MathHelper;
 import lombok.experimental.Delegate;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,7 +8,6 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import org.cyclops.colossalchests.tileentity.TileInterface;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
 import org.cyclops.integrateddynamics.capability.energystorage.IEnergyStorageCapacity;
 import org.cyclops.integrateddynamics.core.helper.EnergyHelpers;
