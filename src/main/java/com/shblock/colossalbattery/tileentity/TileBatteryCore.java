@@ -16,14 +16,14 @@ import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
-import org.cyclops.integrateddynamics.capability.energystorage.IEnergyStorageCapacity;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergyStorageCapacity, CyclopsTileEntity.ITickingTile {
+public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergyStorage, CyclopsTileEntity.ITickingTile {
     @Delegate
     private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
 
@@ -174,11 +174,6 @@ public class TileBatteryCore extends TileMultiBlockPartBase implements IEnergySt
         this.capacity = capacity;
         markDirty();
         sendUpdate();
-    }
-
-    @Override
-    public void setCapacity(int capacity) {
-        setCapacity((long) capacity);
     }
 
     public long getEnergy() {

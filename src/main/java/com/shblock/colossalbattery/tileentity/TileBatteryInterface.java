@@ -9,10 +9,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
-import org.cyclops.integrateddynamics.capability.energystorage.IEnergyStorageCapacity;
 import org.cyclops.integrateddynamics.core.helper.EnergyHelpers;
 
-public class TileBatteryInterface extends TileMultiBlockPartBase implements IEnergyStorageCapacity, CyclopsTileEntity.ITickingTile {
+public class TileBatteryInterface extends TileMultiBlockPartBase implements IEnergyStorage, CyclopsTileEntity.ITickingTile {
     @Delegate
     private final ITickingTile tickingTileComponent = new TickingTileComponent(this);
 
@@ -44,14 +43,6 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
         tag = super.write(tag);
         tag.putInt("mode", this.mode.getId());
         return tag;
-    }
-
-    @Override
-    public void setCapacity(int capacity) {
-        TileBatteryCore te = getCoreTile();
-        if (te != null) {
-            te.setCapacity(capacity);
-        }
     }
 
     @Override
