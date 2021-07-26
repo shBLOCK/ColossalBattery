@@ -257,6 +257,7 @@ public class MultiBlockHelper {
                     if (isFrame(min_pos, max_pos, check_pos)) {
                         if (!validator_frame.test(block)) {
                             error_list.add(new TranslationTextComponent("message.colossal_battery.error.frame_block_invalid", check_pos.toString()).append(material_name));
+                            return null;
                         }
                     } else if (isOutline(min_pos, max_pos, check_pos)) {
                         if (!validator_outline.test(block)) {
