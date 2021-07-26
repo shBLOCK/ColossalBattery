@@ -40,8 +40,11 @@ public class TileMultiBlockDummy extends TileMultiBlockPartBase {
         if (this.blockState == null) {
             ColossalBattery.clog(Level.WARN, "Multi block dummy block found null BlockState when deconstruct! Will replace with air.");
             this.world.setBlockState(this.pos, Blocks.AIR.getDefaultState());
+        } else {
+            world.getProfiler().startSection("bs");
+            this.world.setBlockState(this.pos, this.blockState);
+            world.getProfiler().endSection();
         }
-        this.world.setBlockState(this.pos, this.blockState);
         this.world.removeTileEntity(this.pos);
     }
 

@@ -83,16 +83,20 @@ public class BatteryStructure extends CubeStructure {
     }
 
     public void deconstruct() {
+        world.getProfiler().startSection("dc");
         forEach(
                 blockPos -> {
                     TileEntity te = this.world.getTileEntity(blockPos);
                     if (te instanceof TileMultiBlockDummy) {
+                        world.getProfiler().startSection("dc_dd");
                         ((TileMultiBlockDummy) te).deconstruct();
+                        world.getProfiler().endSection();
                     } else if (te instanceof TileMultiBlockPartBase) {
                         ((TileMultiBlockPartBase) te).onDeconstruct();
                     }
                 }
         );
+        world.getProfiler().endSection();
     }
 
     public int[] getStructureSize() {
