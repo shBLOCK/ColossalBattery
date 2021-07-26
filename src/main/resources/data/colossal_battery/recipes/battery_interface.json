@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {"item": "colossal_battery:battery_inner_basic"},
+    {"item": "colossal_battery:battery_inner_tier_basic"},
     {"tag": "forge:cobblestone"}
   ],
   "result": {

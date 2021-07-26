@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"tag": "forge:cobblestone"},
+    {"tag": "forge:dusts/redstone"}
+  ],
+  "result": {
+    "item": "colossal_battery:battery_inner_tier_basic",
+    "count": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"tag": "forge:storage_blocks/redstone"},
+    {"tag": "forge:nether_stars"},
+    {"tag": "forge:ingots/netherite"},
+    {"item": "minecraft:dragon_breath"}
+  ],
+  "result": {
+    "item": "colossal_battery:battery_inner_tier_ultimate",
+    "count": 1
+  }
+}

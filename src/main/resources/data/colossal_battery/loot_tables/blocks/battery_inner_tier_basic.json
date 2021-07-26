@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "colossal_battery:battery_inner_basic"
+          "name": "colossal_battery:battery_inner_tier_basic"
         }
       ]
     }
