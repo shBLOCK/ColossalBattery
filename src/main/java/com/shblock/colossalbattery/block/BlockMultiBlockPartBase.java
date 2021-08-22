@@ -111,7 +111,6 @@ public class BlockMultiBlockPartBase extends BlockTile {
 
     @Override
     public float getExplosionResistance(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
-        ColossalBattery.clog("getExplosionResistance");
         if (state.get(FORMED)) {
             TileMultiBlockPartBase tile = (TileMultiBlockPartBase) world.getTileEntity(pos);
             if (tile != null) {
