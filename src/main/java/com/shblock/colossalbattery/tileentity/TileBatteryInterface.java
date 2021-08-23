@@ -5,11 +5,13 @@ import com.shblock.colossalbattery.helper.MathHelper;
 import lombok.experimental.Delegate;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import org.cyclops.cyclopscore.helper.TileHelpers;
 import org.cyclops.cyclopscore.tileentity.CyclopsTileEntity;
-import org.cyclops.integrateddynamics.core.helper.EnergyHelpers;
 
 public class TileBatteryInterface extends TileMultiBlockPartBase implements IEnergyStorage, CyclopsTileEntity.ITickingTile {
     @Delegate
@@ -91,10 +93,15 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
         return isFormed();
     }
 
+    public static LazyOptional<IEnergyStorage> getEnergyStorage(IBlockReader world, BlockPos pos, Direction facing) {
+        IEnergyStorage energyStorage = TileHelpers.getCapability(world, pos, facing, CapabilityEnergy.ENERGY).orElse(null);
+        return energyStorage == null ? LazyOptional.empty() : LazyOptional.of(() -> energyStorage);
+    }
+
     private void autoOutput(TileBatteryCore core_tile) {
         if (core_tile == null) return;
         for (Direction facing : Direction.values()) {
-            IEnergyStorage energyStorage = EnergyHelpers.getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
+            IEnergyStorage energyStorage = getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
             if (energyStorage != null) {
                 if (energyStorage instanceof TileBatteryCore) {
                     if (((TileBatteryCore) energyStorage).getPos().equals(this.core_pos)) {
@@ -115,7 +122,7 @@ public class TileBatteryInterface extends TileMultiBlockPartBase implements IEne
     private void autoInput(TileBatteryCore core_tile) {
         if (core_tile == null) return;
         for (Direction facing : Direction.values()) {
-            IEnergyStorage energyStorage = EnergyHelpers.getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
+            IEnergyStorage energyStorage = getEnergyStorage(this.world, this.pos.offset(facing), facing.getOpposite()).orElse(null);
             if (energyStorage != null) {
                 if (energyStorage instanceof TileBatteryCore) {
                     if (((TileBatteryCore) energyStorage).getPos().equals(this.core_pos)) {
